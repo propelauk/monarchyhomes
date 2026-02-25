@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, Phone, PhoneCall, ClipboardCheck } from 'lucide-react'
 import { SITE_CONFIG } from '@/lib/constants'
+import { useCallback } from '@/context/CallbackContext'
 
 const navigation = [
   { name: 'Home', href: '/' },
@@ -18,6 +19,7 @@ const navigation = [
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const { openCallback } = useCallback()
 
   return (
     <>
@@ -136,13 +138,13 @@ export function Header() {
           <ClipboardCheck className="w-4 h-4" />
           <span>Free Assessment</span>
         </Link>
-        <a
-          href={`tel:${SITE_CONFIG.phone}`}
+        <button
+          onClick={openCallback}
           className="flex-1 flex items-center justify-center gap-2 py-4 bg-navy-900 text-white font-semibold text-sm"
         >
           <PhoneCall className="w-4 h-4" />
           <span>Call Me Back</span>
-        </a>
+        </button>
       </div>
     </div>
     </>

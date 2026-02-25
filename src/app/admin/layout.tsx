@@ -25,6 +25,7 @@ interface AdminLayoutProps {
 const navItems = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/admin/leads', label: 'Leads', icon: Users },
+  { href: '/admin/callbacks', label: 'Callbacks', icon: Phone },
   { href: '/admin/email', label: 'Email Center', icon: Mail },
   { href: '/admin/resources', label: 'Resources', icon: FileText },
   { href: '/admin/analytics', label: 'Analytics', icon: BarChart3 },

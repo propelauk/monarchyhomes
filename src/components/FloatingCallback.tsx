@@ -1,26 +1,51 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Phone, X, Send } from 'lucide-react'
+import { Phone, X, Send, Clock } from 'lucide-react'
 import { Button } from './Button'
 import { trackEvent } from './Analytics'
+import { useCallback } from '@/context/CallbackContext'
 
 interface CallbackFormData {
   name: string
   phone: string
+  preferredTime: string
   message: string
 }
 
+const timeOptions = [
+  { value: 'asap', label: 'As soon as possible' },
+  { value: 'morning', label: 'Morning (9am - 12pm)' },
+  { value: 'afternoon', label: 'Afternoon (12pm - 5pm)' },
+  { value: 'evening', label: 'Evening (5pm - 8pm)' },
+]
+
 export function FloatingCallback() {
-  const [isOpen, setIsOpen] = useState(false)
+  const { isOpen, openCallback, closeCallback } = useCallback()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [formData, setFormData] = useState<CallbackFormData>({
     name: '',
     phone: '',
+    preferredTime: 'asap',
     message: '',
   })
+
+  // Reset form when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      setTimeout(() => {
+        setIsSubmitted(false)
+        setFormData({
+          name: '',
+          phone: '',
+          preferredTime: 'asap',
+          message: '',
+        })
+      }, 300)
+    }
+  }, [isOpen])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -34,12 +59,13 @@ export function FloatingCallback() {
       })
 
       if (response.ok) {
-        trackEvent('callback_request_submitted', { source: 'floating_button' })
+        trackEvent('callback_request_submitted', { 
+          source: 'floating_button',
+          preferredTime: formData.preferredTime 
+        })
         setIsSubmitted(true)
-        setFormData({ name: '', phone: '', message: '' })
         setTimeout(() => {
-          setIsOpen(false)
-          setIsSubmitted(false)
+          closeCallback()
         }, 3000)
       }
     } catch (error) {
@@ -54,7 +80,7 @@ export function FloatingCallback() {
       {/* Floating Button - Desktop Only */}
       <motion.button
         onClick={() => {
-          setIsOpen(true)
+          openCallback()
           trackEvent('floating_callback_opened')
         }}
         className="fixed bottom-6 right-6 z-50 hidden lg:flex items-center gap-2 px-5 py-4 text-navy-900 bg-gold-500 rounded-full shadow-2xl hover:bg-gold-400 transition-colors duration-300 group"
@@ -81,7 +107,7 @@ export function FloatingCallback() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => setIsOpen(false)}
+              onClick={closeCallback}
               className="fixed inset-0 bg-navy-900/60 backdrop-blur-sm z-50"
             />
 
@@ -90,13 +116,13 @@ export function FloatingCallback() {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="fixed bottom-24 right-6 z-50 w-full max-w-sm bg-white rounded-2xl shadow-2xl overflow-hidden"
+              className="fixed inset-x-4 bottom-20 sm:bottom-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:inset-x-auto z-50 w-auto sm:w-full max-w-sm bg-white rounded-2xl shadow-2xl overflow-hidden"
             >
               {/* Header */}
               <div className="bg-navy-900 px-6 py-4 flex items-center justify-between">
                 <h3 className="text-white font-semibold text-lg">Call Me Back</h3>
                 <button
-                  onClick={() => setIsOpen(false)}
+                  onClick={closeCallback}
                   className="text-white/70 hover:text-white transition-colors"
                   aria-label="Close"
                 >
@@ -118,7 +144,7 @@ export function FloatingCallback() {
                       </svg>
                     </div>
                     <h4 className="text-lg font-semibold text-navy-900 mb-2">Thank You!</h4>
-                    <p className="text-charcoal-600">We&apos;ll call you back within 24 hours.</p>
+                    <p className="text-charcoal-600">We&apos;ll call you back soon.</p>
                   </motion.div>
                 ) : (
                   <form onSubmit={handleSubmit} className="space-y-4">
@@ -153,6 +179,26 @@ export function FloatingCallback() {
                     </div>
 
                     <div>
+                      <label htmlFor="callback-time" className="block text-sm font-medium text-charcoal-700 mb-1">
+                        <Clock className="w-4 h-4 inline mr-1" />
+                        Best Time to Call
+                      </label>
+                      <select
+                        id="callback-time"
+                        required
+                        value={formData.preferredTime}
+                        onChange={(e) => setFormData({ ...formData, preferredTime: e.target.value })}
+                        className="input-field"
+                      >
+                        {timeOptions.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
                       <label htmlFor="callback-message" className="block text-sm font-medium text-charcoal-700 mb-1">
                         Brief Message (Optional)
                       </label>
@@ -162,7 +208,7 @@ export function FloatingCallback() {
                         value={formData.message}
                         onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                         className="input-field resize-none"
-                        placeholder="Tell us about your HMO..."
+                        placeholder="Tell us about your property..."
                       />
                     </div>
 

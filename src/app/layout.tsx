@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { Analytics } from '@/components/Analytics'
-import { FloatingCallback } from '@/components/FloatingCallback'
+import { Providers } from '@/components/Providers'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://monarchyhomes.com'),
@@ -57,8 +57,9 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen">
         <Analytics />
-        {children}
-        <FloatingCallback />
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   )
