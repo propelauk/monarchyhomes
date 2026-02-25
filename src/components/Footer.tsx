@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { Mail, Phone, MapPin } from 'lucide-react'
 import { SITE_CONFIG } from '@/lib/constants'
 
@@ -33,16 +34,20 @@ export function Footer() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="bg-navy-900 text-white">
+    <footer className="bg-navy-900 text-white pb-20 lg:pb-0">
       {/* Main Footer */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
           {/* Brand */}
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center space-x-3 mb-6">
-              <div className="w-12 h-12 bg-gold-500 rounded-lg flex items-center justify-center">
-                <span className="text-navy-900 font-serif font-bold text-2xl">M</span>
-              </div>
+              <Image
+                src="/logo.png"
+                alt="Monarchy Homes Logo"
+                width={48}
+                height={48}
+                className="w-12 h-12"
+              />
               <div>
                 <span className="text-2xl font-serif font-bold text-white">Monarchy Homes</span>
                 <p className="text-sm text-gray-400">HMO Income & Compliance Specialists</p>

@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, Phone, ChevronDown, PhoneCall } from 'lucide-react'
+import { Menu, X, Phone, PhoneCall, ClipboardCheck } from 'lucide-react'
 import { SITE_CONFIG } from '@/lib/constants'
 
 const navigation = [
@@ -17,15 +18,6 @@ const navigation = [
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [hasScrolled, setHasScrolled] = useState(false)
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setHasScrolled(window.scrollY > 100)
-    }
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
 
   return (
     <>
@@ -34,9 +26,13 @@ export function Header() {
           <div className="flex items-center justify-between h-16 sm:h-20">
             {/* Logo */}
             <Link href="/" className="flex items-center space-x-2 sm:space-x-3">
-              <div className="w-9 h-9 sm:w-10 sm:h-10 bg-navy-900 rounded-lg flex items-center justify-center flex-shrink-0">
-                <span className="text-gold-500 font-serif font-bold text-lg sm:text-xl">M</span>
-              </div>
+              <Image
+                src="/logo.png"
+                alt="Monarchy Homes Logo"
+                width={40}
+                height={40}
+                className="w-9 h-9 sm:w-10 sm:h-10 flex-shrink-0"
+              />
               <div>
                 <span className="text-base sm:text-xl font-serif font-bold text-navy-900">Monarchy Homes</span>
                 <p className="text-[10px] sm:text-xs text-charcoal-500 -mt-0.5">HMO Specialists</p>
@@ -130,26 +126,25 @@ export function Header() {
       </AnimatePresence>
     </header>
 
-    {/* Mobile Sticky Callback Bar - appears after scrolling */}
-    <AnimatePresence>
-      {hasScrolled && (
-        <motion.div
-          initial={{ y: -100, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: -100, opacity: 0 }}
-          transition={{ duration: 0.3 }}
-          className="fixed top-16 left-0 right-0 z-30 lg:hidden bg-gold-500 shadow-md"
+    {/* Mobile Sticky Bottom Bar - always visible on mobile */}
+    <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-white border-t border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.1)]">
+      <div className="flex">
+        <Link
+          href="#assessment"
+          className="flex-1 flex items-center justify-center gap-2 py-4 bg-gold-500 text-navy-900 font-semibold text-sm"
         >
-          <a
-            href={`tel:${SITE_CONFIG.phone}`}
-            className="flex items-center justify-center space-x-2 py-2.5 text-navy-900 font-semibold"
-          >
-            <PhoneCall className="w-4 h-4 animate-pulse" />
-            <span className="text-sm">Request a Callback - {SITE_CONFIG.phone}</span>
-          </a>
-        </motion.div>
-      )}
-    </AnimatePresence>
+          <ClipboardCheck className="w-4 h-4" />
+          <span>Free Assessment</span>
+        </Link>
+        <a
+          href={`tel:${SITE_CONFIG.phone}`}
+          className="flex-1 flex items-center justify-center gap-2 py-4 bg-navy-900 text-white font-semibold text-sm"
+        >
+          <PhoneCall className="w-4 h-4" />
+          <span>Call Me Back</span>
+        </a>
+      </div>
+    </div>
     </>
   )
 }

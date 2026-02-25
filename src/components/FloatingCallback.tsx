@@ -51,22 +51,22 @@ export function FloatingCallback() {
 
   return (
     <>
-      {/* Floating Button */}
+      {/* Floating Button - Desktop Only */}
       <motion.button
         onClick={() => {
           setIsOpen(true)
           trackEvent('floating_callback_opened')
         }}
-        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-5 py-4 text-navy-900 bg-gold-500 rounded-full shadow-2xl hover:bg-gold-400 transition-colors duration-300 group"
+        className="fixed bottom-6 right-6 z-50 hidden lg:flex items-center gap-2 px-5 py-4 text-navy-900 bg-gold-500 rounded-full shadow-2xl hover:bg-gold-400 transition-colors duration-300 group"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         initial={{ y: 100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 1 }}
-        aria-label="Request Callback"
+        aria-label="Call Me Back"
       >
         <Phone className="w-5 h-5" />
-        <span className="font-semibold hidden sm:inline">Request Callback</span>
+        <span className="font-semibold">Call Me Back</span>
         
         {/* Pulse animation */}
         <span className="absolute inset-0 rounded-full bg-gold-500 animate-ping opacity-25" />
@@ -94,7 +94,7 @@ export function FloatingCallback() {
             >
               {/* Header */}
               <div className="bg-navy-900 px-6 py-4 flex items-center justify-between">
-                <h3 className="text-white font-semibold text-lg">Request a Callback</h3>
+                <h3 className="text-white font-semibold text-lg">Call Me Back</h3>
                 <button
                   onClick={() => setIsOpen(false)}
                   className="text-white/70 hover:text-white transition-colors"
