@@ -65,8 +65,8 @@ export function HeroSection() {
             className="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold text-white leading-tight mb-6"
           >
             Gloucestershire Landlords,{' '}
-            <span className="text-gold-500">Increase Yield.</span>{' '}
-            <span className="text-gold-400">Eliminate Risk.</span>
+            <span className="text-gold-500">Earn More.</span>{' '}
+            <span className="text-gold-400">Worry Less.</span>
           </motion.h1>
 
           {/* Subtext */}
@@ -76,7 +76,7 @@ export function HeroSection() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="text-xl text-gray-300 mb-8 max-w-2xl leading-relaxed"
           >
-            Expert property management for HMOs and single lets. Full compliance, maximum occupancy, and stable monthly income — we handle everything so you can grow your portfolio.
+            We manage HMOs and single lets across Gloucestershire. We keep your property legal, fully rented, and the rent paid on time — so you can focus on what matters.
           </motion.p>
 
           {/* Key Benefits */}

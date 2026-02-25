@@ -25,14 +25,14 @@ const stats = [
     value: STATS.averageOccupancy,
     suffix: '%',
     label: 'Average Occupancy',
-    description: 'Industry-leading occupancy rate',
+    description: 'Our rooms stay full',
   },
   {
     icon: Banknote,
     value: STATS.rentCollectionRate,
     suffix: '%',
     label: 'Rent Collection Rate',
-    description: 'Guaranteed income consistency',
+    description: 'You get paid on time',
   },
 ]
 

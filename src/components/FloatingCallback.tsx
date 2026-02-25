@@ -174,7 +174,7 @@ export function FloatingCallback() {
                       icon={<Send className="w-4 h-4" />}
                       className="w-full"
                     >
-                      Request Callback
+                      Call Me Back
                     </Button>
                   </form>
                 )}

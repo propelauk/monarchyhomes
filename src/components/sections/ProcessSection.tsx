@@ -52,7 +52,7 @@ export function ProcessSection() {
           className="text-center mb-16"
         >
           <h2 className="section-heading">
-            How We <span className="text-gold-600">Maximise</span> Your HMO Income
+            How We Put <span className="text-gold-600">More Money</span> in Your Pocket
           </h2>
           <p className="section-subheading mx-auto">
             Our proven 4-step process transforms your HMO from a headache into a hands-off investment.

@@ -64,7 +64,7 @@ export function CTASection() {
               icon={<Phone className="w-5 h-5" />}
               className="border-white text-white hover:bg-white hover:text-navy-900"
             >
-              Request Callback
+              Call Me Back
             </Button>
           </div>
 
