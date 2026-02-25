@@ -1,0 +1,16 @@
+{
+  "name": "Monarchy Homes",
+  "short_name": "Monarchy",
+  "description": "Expert HMO Property Management in Gloucestershire",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0D1B2A",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
