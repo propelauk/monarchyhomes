@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { 
   Search, 
@@ -29,7 +29,20 @@ const statusOptions: { value: LeadStatus; label: string }[] = [
   { value: 'lost', label: 'Lost' },
 ]
 
+// Wrap the main component to avoid useSearchParams SSR issues
 export default function LeadsPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="w-8 h-8 animate-spin text-[#FFC857]" />
+      </div>
+    }>
+      <LeadsPageContent />
+    </Suspense>
+  )
+}
+
+function LeadsPageContent() {
   const [leads, setLeads] = useState<Lead[]>([])
   const [loading, setLoading] = useState(true)
   const [totalPages, setTotalPages] = useState(1)

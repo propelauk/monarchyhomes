@@ -9,6 +9,12 @@ export async function POST(request: NextRequest) {
     const supabase = createServerClient()
     const body = await request.json()
 
+    // Demo mode - just log and return success
+    if (!supabase) {
+      console.log('[DEMO MODE] Analytics event:', body.event_type)
+      return NextResponse.json({ success: true })
+    }
+
     // Validate event type
     const validEventTypes = ['page_view', 'cta_click', 'form_start', 'form_submit', 'calculator_used', 'resource_download']
     if (!body.event_type || !validEventTypes.includes(body.event_type)) {
@@ -61,6 +67,36 @@ export async function GET(request: NextRequest) {
     const supabase = createServerClient()
     const searchParams = request.nextUrl.searchParams
     const period = searchParams.get('period') || '7d'
+
+    // Demo mode - return sample data
+    if (!supabase) {
+      return NextResponse.json({
+        success: true,
+        data: {
+          period,
+          totalEvents: 1250,
+          pageViews: 850,
+          ctaClicks: 180,
+          formSubmits: 47,
+          topPages: [
+            { url: '/', count: 450 },
+            { url: '/services/hmo-property-management', count: 180 },
+            { url: '/services/single-let-management', count: 120 },
+            { url: '/resources/free-assessment', count: 100 },
+          ],
+          deviceBreakdown: { desktop: 520, mobile: 290, tablet: 40 },
+          funnel: {
+            pageViews: 850,
+            ctaClicks: 180,
+            formStarts: 95,
+            formSubmits: 47,
+            ctaRate: 21,
+            formStartRate: 53,
+            conversionRate: 49,
+          },
+        },
+      })
+    }
 
     // Calculate date range
     const now = new Date()

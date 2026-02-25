@@ -57,10 +57,42 @@ export async function GET(request: NextRequest) {
   try {
     const supabase = createServerClient()
     const searchParams = request.nextUrl.searchParams
-    const leadId = searchParams.get('lead_id')
-    const status = searchParams.get('status')
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '25')
+
+    // Demo mode - return sample email logs
+    if (!supabase) {
+      return NextResponse.json({
+        success: true,
+        data: [
+          {
+            id: 'email-1',
+            to: 'john.smith@example.com',
+            subject: 'Welcome to Monarchy Homes',
+            status: 'delivered',
+            email_type: 'transactional',
+            template: 'lead_confirmation',
+            created_at: new Date().toISOString(),
+          },
+          {
+            id: 'email-2',
+            to: 'sarah.j@example.com',
+            subject: 'Free HMO Assessment Report',
+            status: 'delivered',
+            email_type: 'transactional',
+            template: 'assessment_complete',
+            created_at: new Date(Date.now() - 86400000).toISOString(),
+          },
+        ],
+        total: 2,
+        page: 1,
+        limit: 25,
+        totalPages: 1,
+      })
+    }
+    
+    const leadId = searchParams.get('lead_id')
+    const status = searchParams.get('status')
 
     let query = supabase
       .from('email_logs')

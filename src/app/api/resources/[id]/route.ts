@@ -1,6 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase'
 
+// Demo resource data
+const demoResource = {
+  id: 'demo-resource-1',
+  title: 'HMO Landlord Checklist',
+  description: 'Complete checklist for HMO property management',
+  category: 'guide',
+  file_url: '/downloads/hmo-checklist.pdf',
+  file_name: 'hmo-checklist.pdf',
+  is_public: true,
+  download_count: 45,
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
+}
+
 // ============================================
 // GET - Get Single Resource
 // ============================================
@@ -11,6 +25,14 @@ export async function GET(
   try {
     const { id } = await params
     const supabase = createServerClient()
+
+    // Demo mode
+    if (!supabase) {
+      return NextResponse.json({
+        success: true,
+        data: { ...demoResource, id },
+      })
+    }
 
     const { data, error } = await supabase
       .from('resources')
@@ -59,6 +81,15 @@ export async function PUT(
     const supabase = createServerClient()
     const body = await request.json()
 
+    // Demo mode
+    if (!supabase) {
+      console.log('[DEMO MODE] Updating resource:', id, body)
+      return NextResponse.json({
+        success: true,
+        data: { ...demoResource, id, ...body },
+      })
+    }
+
     const allowedFields = ['title', 'description', 'category', 'file_url', 'file_name', 'is_public']
     const updateData: Record<string, unknown> = {}
     
@@ -102,6 +133,15 @@ export async function DELETE(
   try {
     const { id } = await params
     const supabase = createServerClient()
+
+    // Demo mode
+    if (!supabase) {
+      console.log('[DEMO MODE] Deleting resource:', id)
+      return NextResponse.json({
+        success: true,
+        message: 'Resource deleted successfully',
+      })
+    }
 
     const { error } = await supabase
       .from('resources')

@@ -1,6 +1,43 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase'
 
+// Demo resources data
+const demoResources = [
+  {
+    id: 'resource-1',
+    title: 'HMO Landlord Checklist',
+    description: 'Complete checklist for HMO property management compliance',
+    category: 'guide',
+    file_url: '/downloads/hmo-checklist.pdf',
+    file_name: 'hmo-checklist.pdf',
+    is_public: true,
+    download_count: 127,
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: 'resource-2',
+    title: 'Rent Guarantee Explained',
+    description: 'Understanding guaranteed rent schemes for landlords',
+    category: 'guide',
+    file_url: '/downloads/rent-guarantee.pdf',
+    file_name: 'rent-guarantee.pdf',
+    is_public: true,
+    download_count: 89,
+    created_at: new Date(Date.now() - 86400000).toISOString(),
+  },
+  {
+    id: 'resource-3',
+    title: 'HMO Licensing Requirements 2024',
+    description: 'Updated licensing requirements for HMO properties',
+    category: 'compliance',
+    file_url: '/downloads/hmo-licensing-2024.pdf',
+    file_name: 'hmo-licensing-2024.pdf',
+    is_public: true,
+    download_count: 203,
+    created_at: new Date(Date.now() - 172800000).toISOString(),
+  },
+]
+
 // ============================================
 // GET - List Resources
 // ============================================
@@ -10,6 +47,18 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams
     const category = searchParams.get('category')
     const publicOnly = searchParams.get('public') !== 'false'
+
+    // Demo mode
+    if (!supabase) {
+      let resources = [...demoResources]
+      if (category) {
+        resources = resources.filter(r => r.category === category)
+      }
+      return NextResponse.json({
+        success: true,
+        data: resources,
+      })
+    }
 
     let query = supabase
       .from('resources')
@@ -58,6 +107,20 @@ export async function POST(request: NextRequest) {
         { success: false, error: 'Title and file URL are required' },
         { status: 400 }
       )
+    }
+
+    // Demo mode
+    if (!supabase) {
+      console.log('[DEMO MODE] Creating resource:', body.title)
+      return NextResponse.json({
+        success: true,
+        data: {
+          id: `resource-${Date.now()}`,
+          ...body,
+          download_count: 0,
+          created_at: new Date().toISOString(),
+        },
+      })
     }
 
     const { data, error } = await supabase

@@ -10,12 +10,33 @@ export interface AdminSession {
   name: string
 }
 
+// Demo admin session for when Supabase is not configured
+const demoAdminSession: AdminSession = {
+  userId: 'demo-admin-1',
+  email: 'admin@monarchyhomes.com',
+  role: 'super_admin',
+  name: 'Demo Admin',
+}
+
 /**
  * Verify admin authentication from request
  * Returns admin session or null if not authenticated
  */
 export async function verifyAdminAuth(request: NextRequest): Promise<AdminSession | null> {
   try {
+    const supabase = createServerClient()
+    
+    // Demo mode - return demo session for demo requests
+    if (!supabase) {
+      // In demo mode, check for a demo token
+      const authHeader = request.headers.get('authorization')
+      if (authHeader?.includes('demo') || authHeader?.includes('Bearer ')) {
+        return demoAdminSession
+      }
+      // Allow access in demo mode without auth for viewing
+      return demoAdminSession
+    }
+
     // Get auth token from header or cookie
     const authHeader = request.headers.get('authorization')
     const token = authHeader?.replace('Bearer ', '')
@@ -23,8 +44,6 @@ export async function verifyAdminAuth(request: NextRequest): Promise<AdminSessio
     if (!token) {
       return null
     }
-
-    const supabase = createServerClient()
     
     // Verify the JWT token
     const { data: { user }, error } = await supabase.auth.getUser(token)
@@ -98,6 +117,27 @@ export function withAdminAuth(
 export async function adminLogin(email: string, password: string): Promise<{ success: boolean; error?: string; session?: AdminSession }> {
   try {
     const supabase = createServerClient()
+    
+    // Demo mode - accept demo credentials
+    if (!supabase) {
+      // In demo mode, accept specific demo credentials or any login  
+      if (email === 'admin@monarchyhomes.com' || email === 'demo@demo.com') {
+        console.log('[DEMO MODE] Admin login successful for:', email)
+        return {
+          success: true,
+          session: demoAdminSession,
+        }
+      }
+      // Still allow any login in demo mode for testing
+      console.log('[DEMO MODE] Admin login:', email)
+      return {
+        success: true,
+        session: {
+          ...demoAdminSession,
+          email,
+        },
+      }
+    }
     
     // Sign in with Supabase Auth
     const { data, error } = await supabase.auth.signInWithPassword({

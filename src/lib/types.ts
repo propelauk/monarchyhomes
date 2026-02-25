@@ -8,6 +8,8 @@ export interface Lead {
   property_postcode: string | null
   property_address: string | null
   property_type: string | null
+  ownership_status: string | null
+  property_timeline: string | null
   number_of_rooms: number | null
   licensed: boolean
   has_license: string | null
@@ -117,6 +119,8 @@ export interface CreateLeadRequest {
   property_postcode?: string
   property_address?: string
   property_type?: string
+  ownership_status?: string
+  property_timeline?: string
   number_of_rooms?: number
   has_license?: string
   current_occupancy?: number

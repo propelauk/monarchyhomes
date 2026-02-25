@@ -2,8 +2,19 @@ import { Resend } from 'resend'
 import { createServerClient } from './supabase'
 import { Lead } from './types'
 
-// Initialize Resend client
-const resend = new Resend(process.env.RESEND_API_KEY)
+// Lazy initialize Resend client
+let resendClient: Resend | null = null
+
+function getResendClient(): Resend | null {
+  if (!process.env.RESEND_API_KEY) {
+    console.warn('RESEND_API_KEY not configured - emails will not be sent')
+    return null
+  }
+  if (!resendClient) {
+    resendClient = new Resend(process.env.RESEND_API_KEY)
+  }
+  return resendClient
+}
 
 const FROM_EMAIL = process.env.FROM_EMAIL || 'Monarchy Homes <noreply@monarchyhomes.com>'
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'hello@monarchyhomes.com'
@@ -22,7 +33,22 @@ interface SendEmailParams {
 
 export async function sendEmail(params: SendEmailParams): Promise<{ success: boolean; id?: string; error?: string }> {
   const { to, subject, html, text, leadId, template, emailType = 'transactional', sentBy } = params
-  const supabase = createServerClient()
+  
+  const resend = getResendClient()
+  
+  // If no Resend client (no API key), skip email sending but don't fail
+  if (!resend) {
+    console.log(`[Demo Mode] Would send email to ${to}: ${subject}`)
+    return { success: true, id: 'demo-mode' }
+  }
+
+  let supabase
+  try {
+    supabase = createServerClient()
+  } catch {
+    // If Supabase not configured, continue without logging
+    supabase = null
+  }
 
   try {
     // Send email via Resend
@@ -36,6 +62,42 @@ export async function sendEmail(params: SendEmailParams): Promise<{ success: boo
 
     if (error) {
       // Log failed email
+      if (supabase) {
+        await supabase.from('email_logs').insert({
+          lead_id: leadId,
+          recipient_email: to,
+          subject,
+          template,
+          email_type: emailType,
+          status: 'failed',
+          error_message: error.message,
+          sent_by: sentBy,
+        })
+      }
+      
+      return { success: false, error: error.message }
+    }
+
+    // Log successful email
+    if (supabase) {
+      await supabase.from('email_logs').insert({
+        lead_id: leadId,
+        recipient_email: to,
+        subject,
+        template,
+        email_type: emailType,
+        status: 'sent',
+        metadata: { resend_id: data?.id },
+        sent_by: sentBy,
+      })
+    }
+
+    return { success: true, id: data?.id }
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error'
+    
+    // Log error
+    if (supabase) {
       await supabase.from('email_logs').insert({
         lead_id: leadId,
         recipient_email: to,
@@ -43,40 +105,10 @@ export async function sendEmail(params: SendEmailParams): Promise<{ success: boo
         template,
         email_type: emailType,
         status: 'failed',
-        error_message: error.message,
+        error_message: errorMessage,
         sent_by: sentBy,
       })
-      
-      return { success: false, error: error.message }
     }
-
-    // Log successful email
-    await supabase.from('email_logs').insert({
-      lead_id: leadId,
-      recipient_email: to,
-      subject,
-      template,
-      email_type: emailType,
-      status: 'sent',
-      metadata: { resend_id: data?.id },
-      sent_by: sentBy,
-    })
-
-    return { success: true, id: data?.id }
-  } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : 'Unknown error'
-    
-    // Log error
-    await supabase.from('email_logs').insert({
-      lead_id: leadId,
-      recipient_email: to,
-      subject,
-      template,
-      email_type: emailType,
-      status: 'failed',
-      error_message: errorMessage,
-      sent_by: sentBy,
-    })
 
     return { success: false, error: errorMessage }
   }
