@@ -80,12 +80,28 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    // Get calls made today (callbacks with status 'called' or 'completed' updated today)
+    let callsToday = 0
+    if (supabase) {
+      const todayStart = new Date()
+      todayStart.setHours(0, 0, 0, 0)
+      
+      const { count } = await supabase
+        .from('callbacks')
+        .select('*', { count: 'exact', head: true })
+        .in('status', ['called', 'completed'])
+        .gte('updated_at', todayStart.toISOString())
+      
+      callsToday = count || 0
+    }
+
     return NextResponse.json({
       success: true,
       data: {
         ...stats,
         weeklyData,
         trends,
+        callsToday,
       },
     })
   } catch (error) {

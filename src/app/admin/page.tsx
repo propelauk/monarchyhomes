@@ -18,7 +18,9 @@ import {
 interface DashboardStats {
   totalLeads: number
   newLeads: number
+  leadsToday: number
   leadsThisWeek: number
+  callsToday: number
   contacted: number
   qualified: number
   converted: number
@@ -81,7 +83,9 @@ export default function AdminDashboardPage() {
       setStats({
         totalLeads: 0,
         newLeads: 0,
+        leadsToday: 0,
         leadsThisWeek: 0,
+        callsToday: 0,
         contacted: 0,
         qualified: 0,
         converted: 0,
@@ -305,11 +309,11 @@ export default function AdminDashboardPage() {
             <h4 className="font-medium text-gray-900 mb-3">Today&apos;s Summary</h4>
             <div className="grid grid-cols-2 gap-3">
               <div className="bg-gray-50 rounded-lg p-3 text-center">
-                <p className="text-2xl font-bold text-[#0D1B2A]">3</p>
+                <p className="text-2xl font-bold text-[#0D1B2A]">{stats?.leadsToday ?? 0}</p>
                 <p className="text-xs text-gray-500">New Leads</p>
               </div>
               <div className="bg-gray-50 rounded-lg p-3 text-center">
-                <p className="text-2xl font-bold text-green-600">2</p>
+                <p className="text-2xl font-bold text-green-600">{stats?.callsToday ?? 0}</p>
                 <p className="text-xs text-gray-500">Calls Made</p>
               </div>
             </div>
