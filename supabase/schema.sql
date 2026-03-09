@@ -17,6 +17,8 @@ CREATE TABLE IF NOT EXISTS leads (
     property_postcode TEXT,
     property_address TEXT,
     property_type TEXT,
+    ownership_status TEXT, -- 'owned', 'buying', 'renting'
+    property_timeline TEXT, -- 'ready_now', '3_months', '6_months', 'exploring'
     number_of_rooms INTEGER,
     licensed BOOLEAN DEFAULT FALSE,
     has_license TEXT, -- 'yes', 'no', 'unsure'
@@ -180,6 +182,23 @@ CREATE INDEX IF NOT EXISTS idx_downloads_email ON downloads(email);
 CREATE INDEX IF NOT EXISTS idx_downloads_created_at ON downloads(created_at DESC);
 
 -- ============================================
+-- 9. CALLBACKS TABLE (Call Me Back Requests)
+-- ============================================
+CREATE TABLE IF NOT EXISTS callbacks (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name TEXT NOT NULL,
+    phone TEXT NOT NULL,
+    preferred_time TEXT DEFAULT 'asap', -- 'asap', 'morning', 'afternoon', 'evening'
+    message TEXT,
+    status TEXT DEFAULT 'pending', -- 'pending', 'called', 'no_answer', 'completed'
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_callbacks_status ON callbacks(status);
+CREATE INDEX IF NOT EXISTS idx_callbacks_created_at ON callbacks(created_at DESC);
+
+-- ============================================
 -- FUNCTIONS
 -- ============================================
 
@@ -208,6 +227,11 @@ CREATE TRIGGER update_resources_updated_at
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 
+CREATE TRIGGER update_callbacks_updated_at
+    BEFORE UPDATE ON callbacks
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
 -- ============================================
 -- ROW LEVEL SECURITY (RLS)
 -- ============================================
@@ -220,6 +244,8 @@ ALTER TABLE resources ENABLE ROW LEVEL SECURITY;
 ALTER TABLE analytics_events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE lead_activities ENABLE ROW LEVEL SECURITY;
 ALTER TABLE email_templates ENABLE ROW LEVEL SECURITY;
+ALTER TABLE callbacks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE downloads ENABLE ROW LEVEL SECURITY;
 
 -- Policies for leads
 CREATE POLICY "Service role can do all on leads" ON leads
@@ -245,35 +271,60 @@ CREATE POLICY "Anyone can insert leads" ON leads
     FOR INSERT WITH CHECK (true);
 
 -- Policies for admin_users
+CREATE POLICY "Service role can manage admin_users" ON admin_users
+    FOR ALL USING (auth.role() = 'service_role');
+
 CREATE POLICY "Admins can read admin_users" ON admin_users
     FOR SELECT USING (
         auth.uid() = id OR 
         EXISTS (SELECT 1 FROM admin_users WHERE id = auth.uid() AND role = 'admin')
     );
 
+-- Policies for email_logs
+CREATE POLICY "Service role can manage email_logs" ON email_logs
+    FOR ALL USING (auth.role() = 'service_role');
+
+-- Policies for lead_activities
+CREATE POLICY "Service role can manage lead_activities" ON lead_activities
+    FOR ALL USING (auth.role() = 'service_role');
+
+-- Policies for email_templates  
+CREATE POLICY "Service role can manage email_templates" ON email_templates
+    FOR ALL USING (auth.role() = 'service_role');
+
 -- Policies for resources
+CREATE POLICY "Service role can manage all resources" ON resources
+    FOR ALL USING (auth.role() = 'service_role');
+
 CREATE POLICY "Anyone can read public resources" ON resources
     FOR SELECT USING (is_public = true);
 
-CREATE POLICY "Admins can manage resources" ON resources
-    FOR ALL USING (
-        EXISTS (SELECT 1 FROM admin_users WHERE id = auth.uid())
-    );
-
--- Policies for analytics (public insert, admin read)
+-- Policies for analytics (public insert, service role read)
 CREATE POLICY "Anyone can insert analytics" ON analytics_events
     FOR INSERT WITH CHECK (true);
 
-CREATE POLICY "Admins can read analytics" ON analytics_events
-    FOR SELECT USING (
-        EXISTS (SELECT 1 FROM admin_users WHERE id = auth.uid())
-    );
+CREATE POLICY "Service role can manage analytics" ON analytics_events
+    FOR ALL USING (auth.role() = 'service_role');
+
+-- Policies for callbacks (public insert, admin manage)
+CREATE POLICY "Anyone can insert callbacks" ON callbacks
+    FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Service role can manage callbacks" ON callbacks
+    FOR ALL USING (auth.role() = 'service_role');
+
+-- Policies for downloads (public insert for forms)
+CREATE POLICY "Anyone can insert downloads" ON downloads
+    FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Service role can manage downloads" ON downloads
+    FOR ALL USING (auth.role() = 'service_role');
 
 -- ============================================
 -- INITIAL DATA
 -- ============================================
 
--- Insert default email templates
+-- Insert default email templates (skip if already exists)
 INSERT INTO email_templates (name, subject, body_html, body_text, variables) VALUES
 (
     'lead_confirmation',
@@ -295,4 +346,6 @@ INSERT INTO email_templates (name, subject, body_html, body_text, variables) VAL
     '<h1>Callback Confirmed</h1><p>Hi {{full_name}},</p><p>We have received your callback request. One of our team will call you at {{phone}} shortly.</p><p>Best regards,<br>Monarchy Homes</p>',
     'Hi {{full_name}}, We have received your callback request. One of our team will call you at {{phone}} shortly.',
     ARRAY['full_name', 'phone']
+)
+ON CONFLICT (name) DO NOTHING;
 );

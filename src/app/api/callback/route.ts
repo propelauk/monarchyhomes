@@ -1,15 +1,5 @@
 import { NextResponse } from 'next/server'
-
-// Storage for real callback requests (in production, use Supabase)
-const callbacks: Array<{
-  id: string
-  name: string
-  phone: string
-  preferredTime: string
-  message: string | null
-  status: 'pending' | 'called' | 'no_answer' | 'completed'
-  created_at: string
-}> = []
+import { createServerClient } from '@/lib/supabase'
 
 // Callback request handler
 export async function POST(request: Request) {
@@ -24,30 +14,45 @@ export async function POST(request: Request) {
       )
     }
 
-    const callback = {
-      id: `callback_${Date.now()}`,
+    const supabase = createServerClient()
+    
+    const callbackData = {
       name: body.name,
       phone: body.phone,
-      preferredTime: body.preferredTime || 'asap',
+      preferred_time: body.preferredTime || 'asap',
       message: body.message || null,
-      status: 'pending' as const,
-      created_at: new Date().toISOString(),
+      status: 'pending',
     }
 
-    // In production, save to Supabase
-    // const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_ANON_KEY!)
-    // await supabase.from('callbacks').insert(callback)
+    // Save to Supabase if available
+    if (supabase) {
+      const { data, error } = await supabase
+        .from('callbacks')
+        .insert(callbackData)
+        .select()
+        .single()
+      
+      if (error) {
+        console.error('Callback insert error:', error)
+        throw new Error(error.message)
+      }
 
-    // Store in array (use Supabase in production)
-    callbacks.unshift(callback)
-
-    // Log for development
-    console.log('Callback request received:', callback)
-
+      console.log('Callback saved to Supabase:', data.id)
+      
+      return NextResponse.json({
+        success: true,
+        message: 'Callback request submitted successfully',
+        requestId: data.id,
+      })
+    }
+    
+    // No Supabase - log and return success (data won't persist)
+    console.log('Callback request received (no database):', callbackData)
+    
     return NextResponse.json({
       success: true,
       message: 'Callback request submitted successfully',
-      requestId: callback.id,
+      requestId: `temp_${Date.now()}`,
     })
   } catch (error) {
     console.error('Callback request error:', error)
@@ -59,15 +64,39 @@ export async function POST(request: Request) {
 }
 
 export async function GET() {
-  // Return callbacks from Supabase
-  // In production, fetch from Supabase
-  
-  // Return empty array - no demo data
-  return NextResponse.json({ 
-    success: true,
-    data: [],
-    total: 0,
-  })
+  try {
+    const supabase = createServerClient()
+    
+    // No Supabase - return empty
+    if (!supabase) {
+      return NextResponse.json({ 
+        success: true,
+        data: [],
+        total: 0,
+      })
+    }
+
+    const { data, error, count } = await supabase
+      .from('callbacks')
+      .select('*', { count: 'exact' })
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      throw new Error(error.message)
+    }
+
+    return NextResponse.json({ 
+      success: true,
+      data: data || [],
+      total: count || 0,
+    })
+  } catch (error) {
+    console.error('Callback fetch error:', error)
+    return NextResponse.json(
+      { error: 'Failed to fetch callbacks' },
+      { status: 500 }
+    )
+  }
 }
 
 export async function PATCH(request: Request) {
@@ -81,10 +110,22 @@ export async function PATCH(request: Request) {
       )
     }
 
-    // Find and update callback
-    const index = callbacks.findIndex(c => c.id === body.id)
-    if (index !== -1) {
-      callbacks[index].status = body.status
+    const supabase = createServerClient()
+    
+    if (!supabase) {
+      return NextResponse.json(
+        { error: 'Database not configured' },
+        { status: 500 }
+      )
+    }
+
+    const { error } = await supabase
+      .from('callbacks')
+      .update({ status: body.status })
+      .eq('id', body.id)
+
+    if (error) {
+      throw new Error(error.message)
     }
 
     return NextResponse.json({
