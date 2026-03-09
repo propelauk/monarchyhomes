@@ -215,6 +215,77 @@ The site emphasizes **trust, authority, clarity, and local expertise**, converti
 
 ---
 
+## Setup Instructions
+
+### 1. Clone and Install
+
+```bash
+git clone https://github.com/propelauk/monarchyhomes.git
+cd monarchyhomes
+npm install
+```
+
+### 2. Environment Variables
+
+Create a `.env.local` file in the root directory with the following variables:
+
+```env
+# Supabase (Required for production)
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+
+# Resend Email (Required for sending emails)
+RESEND_API_KEY=your_resend_api_key
+FROM_EMAIL=noreply@yourdomain.com
+ADMIN_EMAIL=admin@yourdomain.com
+
+# Site URL
+NEXT_PUBLIC_SITE_URL=https://your-domain.com
+```
+
+### 3. Setting up Supabase
+
+1. Create a new project at [supabase.com](https://supabase.com)
+2. Go to the SQL Editor in your Supabase dashboard
+3. Copy the contents of `supabase/schema.sql` and run it to create all tables
+4. Copy your project URL and API keys from Settings > API
+
+### 4. Setting up Resend
+
+1. Create an account at [resend.com](https://resend.com)
+2. Add and verify your domain
+3. Create an API key
+4. Add the API key to your `.env.local` file
+
+### 5. Run Development Server
+
+```bash
+npm run dev
+```
+
+### 6. Deploy to Vercel
+
+1. Push to GitHub
+2. Import project in Vercel
+3. Add environment variables in Vercel dashboard
+4. Deploy
+
+---
+
+## Lead Magnet Download System
+
+The site includes a lead magnet system for "The Renters Rights Act Explained" PDF:
+
+1. User fills in their details on the homepage
+2. An email is sent with a secure download link
+3. User clicks the link and is taken to a download page
+4. Download is tracked in the database
+
+The PDF file is located at: `public/The Renters Rights Act explained.pdf`
+
+---
+
 ## Strategic Positioning Summary
 
 - Headline: **"Maximise Your HMO Income Without The Compliance Headache"**  

@@ -159,6 +159,26 @@ CREATE TABLE IF NOT EXISTS email_templates (
 );
 
 -- ============================================
+-- 8. DOWNLOADS TABLE (Lead Magnet Downloads)
+-- ============================================
+CREATE TABLE IF NOT EXISTS downloads (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    phone TEXT NOT NULL,
+    resource TEXT NOT NULL,
+    download_token TEXT NOT NULL UNIQUE,
+    expires_at TIMESTAMPTZ NOT NULL,
+    downloaded BOOLEAN DEFAULT FALSE,
+    downloaded_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_downloads_token ON downloads(download_token);
+CREATE INDEX IF NOT EXISTS idx_downloads_email ON downloads(email);
+CREATE INDEX IF NOT EXISTS idx_downloads_created_at ON downloads(created_at DESC);
+
+-- ============================================
 -- FUNCTIONS
 -- ============================================
 

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { FileText, Download, CheckCircle, Mail, User, Phone } from 'lucide-react'
+import { FileText, Download, CheckCircle, Mail, User, Phone, Scale } from 'lucide-react'
 import { Button } from '@/components/Button'
 import { trackEvent } from '@/components/Analytics'
 
@@ -31,15 +31,13 @@ export function LeadMagnetSection() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...formData,
-          resource: 'hmo-compliance-checklist',
+          resource: 'renters-rights-act',
         }),
       })
 
       if (response.ok) {
-        trackEvent('lead_magnet_download', { resource: 'hmo-compliance-checklist' })
+        trackEvent('lead_magnet_download', { resource: 'renters-rights-act' })
         setIsSubmitted(true)
-        // In production, this would trigger the PDF download
-        // window.open('/downloads/hmo-compliance-checklist.pdf', '_blank')
       }
     } catch (error) {
       console.error('Download request failed:', error)
@@ -48,13 +46,13 @@ export function LeadMagnetSection() {
     }
   }
 
-  const checklistItems = [
-    'Fire safety requirements',
-    'HMO licensing checklist',
-    'Room size regulations',
-    'Kitchen & bathroom standards',
-    'Electrical safety certificates',
-    'Council inspection preparation',
+  const keyTopics = [
+    'What the Renters Rights Act means',
+    'Key changes for landlords',
+    'New tenant protections',
+    'Eviction process changes',
+    'Rent increase rules',
+    'Compliance requirements',
   ]
 
   return (
@@ -72,21 +70,21 @@ export function LeadMagnetSection() {
             >
               {/* Badge */}
               <div className="inline-flex items-center space-x-2 bg-gold-500/20 rounded-full px-4 py-2 mb-6">
-                <FileText className="w-4 h-4 text-gold-500" />
-                <span className="text-gold-500 text-sm font-medium">Free Download</span>
+                <Scale className="w-4 h-4 text-gold-500" />
+                <span className="text-gold-500 text-sm font-medium">Free Guide</span>
               </div>
 
               <h2 className="text-2xl md:text-3xl lg:text-4xl font-serif font-bold text-white mb-4">
-                Free HMO Compliance Checklist for Gloucestershire Landlords
+                The Renters Rights Act Explained
               </h2>
 
               <p className="text-gray-400 mb-8">
-                Don&apos;t risk fines or losing your license. Download our comprehensive checklist to ensure your HMO meets all council requirements.
+                Stay ahead of the changes. Download our comprehensive guide to understand how the new Renters Rights Act affects you as a landlord.
               </p>
 
-              {/* Checklist Preview */}
+              {/* Key Topics Preview */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
-                {checklistItems.map((item, index) => (
+                {keyTopics.map((item, index) => (
                   <div key={index} className="flex items-center space-x-2">
                     <CheckCircle className="w-5 h-5 text-gold-500 flex-shrink-0" />
                     <span className="text-gray-300 text-sm">{item}</span>
@@ -96,7 +94,7 @@ export function LeadMagnetSection() {
 
               {/* Trust Text */}
               <p className="text-sm text-gray-500">
-                Updated for 2026 regulations
+                Updated for 2026 legislation
               </p>
             </motion.div>
 
@@ -118,7 +116,7 @@ export function LeadMagnetSection() {
                       Check Your Email!
                     </h3>
                     <p className="text-charcoal-600 mb-6">
-                      We&apos;ve sent the HMO Compliance Checklist to your inbox. Check your spam folder if you don&apos;t see it.
+                      We&apos;ve sent your download link to your inbox. Click the link in the email to access your free guide on the Renters Rights Act.
                     </p>
                     <Button
                       variant="secondary"
@@ -131,7 +129,7 @@ export function LeadMagnetSection() {
               ) : (
                 <>
                   <h3 className="text-xl font-semibold text-navy-900 mb-6">
-                    Download Your Free Checklist
+                    Get Your Free Guide
                   </h3>
 
                   <form onSubmit={handleSubmit} className="space-y-5">
@@ -194,14 +192,14 @@ export function LeadMagnetSection() {
                       variant="primary"
                       size="lg"
                       isLoading={isSubmitting}
-                      icon={<Download className="w-5 h-5" />}
+                      icon={<Mail className="w-5 h-5" />}
                       className="w-full"
                     >
-                      Download Now
+                      Send Me The Guide
                     </Button>
 
                     <p className="text-xs text-charcoal-500 text-center">
-                      By downloading, you agree to receive occasional emails about HMO management. Unsubscribe anytime.
+                      By submitting, you agree to receive occasional emails about property management. Unsubscribe anytime.
                     </p>
                   </form>
                 </>

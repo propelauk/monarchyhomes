@@ -414,3 +414,109 @@ export async function sendCallbackConfirmationEmail(lead: Lead): Promise<void> {
     emailType: 'transactional',
   })
 }
+
+// ============================================
+// RESOURCE DOWNLOAD EMAIL
+// ============================================
+
+interface ResourceDownloadEmailParams {
+  name: string
+  resourceTitle: string
+  resourceDescription: string
+  downloadUrl: string
+}
+
+export function generateResourceDownloadEmail(params: ResourceDownloadEmailParams): { subject: string; html: string; text: string } {
+  const { name, resourceTitle, resourceDescription, downloadUrl } = params
+  const subject = `Your Download: ${resourceTitle} - Monarchy Homes`
+  
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${subject}</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f5f5f5;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
+    <!-- Header -->
+    <tr>
+      <td style="background-color: #0D1B2A; padding: 30px; text-align: center;">
+        <h1 style="color: #FFC857; margin: 0; font-size: 28px;">Monarchy Homes</h1>
+        <p style="color: #ffffff; margin: 10px 0 0 0; font-size: 14px;">Reliability & Trust</p>
+      </td>
+    </tr>
+    
+    <!-- Content -->
+    <tr>
+      <td style="padding: 40px 30px;">
+        <h2 style="color: #0D1B2A; margin: 0 0 20px 0;">Hi ${name}!</h2>
+        
+        <p style="color: #424242; font-size: 16px; line-height: 1.6;">
+          Thank you for your interest. Here's your download link for:
+        </p>
+        
+        <div style="background-color: #f8f9fa; border-left: 4px solid #FFC857; padding: 20px; margin: 20px 0;">
+          <h3 style="color: #0D1B2A; margin: 0 0 8px 0; font-size: 18px;">${resourceTitle}</h3>
+          <p style="color: #666; margin: 0; font-size: 14px;">${resourceDescription}</p>
+        </div>
+        
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${downloadUrl}" style="display: inline-block; background-color: #FFC857; color: #0D1B2A; padding: 16px 40px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
+            Download Your Guide
+          </a>
+        </div>
+        
+        <p style="color: #666; font-size: 14px; line-height: 1.6;">
+          This download link will expire in 7 days. If you have any trouble accessing your download, simply reply to this email.
+        </p>
+        
+        <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+        
+        <p style="color: #424242; font-size: 16px; line-height: 1.6;">
+          If you have any questions about property management or would like to discuss your HMO, we'd be happy to help.
+        </p>
+        
+        <p style="color: #424242; font-size: 16px; line-height: 1.6;">
+          Call us on <a href="tel:01452452308" style="color: #0D1B2A; font-weight: bold;">01452 452308</a>
+        </p>
+      </td>
+    </tr>
+    
+    <!-- Footer -->
+    <tr>
+      <td style="background-color: #0D1B2A; padding: 30px; text-align: center;">
+        <p style="color: #ffffff; margin: 0 0 10px 0; font-size: 14px;">
+          Monarchy Homes | Property Management
+        </p>
+        <p style="color: #9e9e9e; margin: 0; font-size: 12px;">
+          Gloucester • Cheltenham • Stroud • Tewkesbury
+        </p>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+`
+
+  const text = `
+Hi ${name}!
+
+Thank you for your interest. Here's your download link:
+
+${resourceTitle}
+${resourceDescription}
+
+Download your guide: ${downloadUrl}
+
+This download link will expire in 7 days.
+
+If you have any questions about property management, call us on 01452 452308.
+
+Best regards,
+The Monarchy Homes Team
+`
+
+  return { subject, html, text }
+}

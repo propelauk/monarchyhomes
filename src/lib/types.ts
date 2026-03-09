@@ -74,6 +74,19 @@ export interface Resource {
   updated_at: string
 }
 
+export interface Download {
+  id: string
+  name: string
+  email: string
+  phone: string
+  resource: string
+  download_token: string
+  expires_at: string
+  downloaded: boolean
+  downloaded_at: string | null
+  created_at: string
+}
+
 export interface AnalyticsEvent {
   id: string
   event_type: string
