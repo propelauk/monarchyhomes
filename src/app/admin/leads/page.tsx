@@ -89,58 +89,9 @@ function LeadsPageContent() {
       }
     } catch (error) {
       console.error('Failed to fetch leads:', error)
-      // Mock data for demo
-      setLeads([
-        {
-          id: '1',
-          full_name: 'John Smith',
-          phone: '07123456789',
-          email: 'john@email.com',
-          property_postcode: 'GL1 1AA',
-          property_type: 'Detached House',
-          number_of_rooms: 6,
-          has_license: 'yes',
-          status: 'new',
-          lead_type: 'assessment',
-          lead_source: 'website',
-          portfolio_owner: true,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-        {
-          id: '2',
-          full_name: 'Sarah Johnson',
-          phone: '07987654321',
-          email: 'sarah@example.com',
-          property_postcode: 'GL2 2BB',
-          property_type: 'Semi-Detached',
-          number_of_rooms: 5,
-          has_license: 'no',
-          status: 'contacted',
-          lead_type: 'callback',
-          lead_source: 'referral',
-          portfolio_owner: false,
-          created_at: new Date(Date.now() - 86400000).toISOString(),
-          updated_at: new Date(Date.now() - 86400000).toISOString(),
-        },
-        {
-          id: '3',
-          full_name: 'Mike Williams',
-          phone: '07555555555',
-          email: 'mike@test.com',
-          property_postcode: 'GL3 3CC',
-          property_type: 'Terraced',
-          number_of_rooms: 4,
-          has_license: 'unsure',
-          status: 'qualified',
-          lead_type: 'assessment',
-          lead_source: 'google',
-          portfolio_owner: true,
-          created_at: new Date(Date.now() - 172800000).toISOString(),
-          updated_at: new Date(Date.now() - 172800000).toISOString(),
-        },
-      ] as Lead[])
-      setTotal(3)
+      // Empty state for production
+      setLeads([])
+      setTotal(0)
       setTotalPages(1)
     } finally {
       setLoading(false)

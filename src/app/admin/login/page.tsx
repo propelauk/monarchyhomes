@@ -34,6 +34,7 @@ export default function AdminLoginPage() {
       // Store auth state
       localStorage.setItem('monarchy_admin_auth', 'true')
       localStorage.setItem('monarchy_admin_name', data.data.name)
+      localStorage.setItem('monarchy_admin_email', data.data.email)
       
       router.push('/admin')
     } catch {
@@ -41,13 +42,6 @@ export default function AdminLoginPage() {
     } finally {
       setLoading(false)
     }
-  }
-
-  // Demo login for development
-  const handleDemoLogin = () => {
-    localStorage.setItem('monarchy_admin_auth', 'true')
-    localStorage.setItem('monarchy_admin_name', 'Demo Admin')
-    router.push('/admin')
   }
 
   return (
@@ -125,25 +119,6 @@ export default function AdminLoginPage() {
               'Sign In'
             )}
           </button>
-
-          {/* Demo Login Button */}
-          <div className="mt-4">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-200" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">or</span>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={handleDemoLogin}
-              className="w-full mt-4 border-2 border-[#FFC857] text-[#0D1B2A] py-3 rounded-lg font-medium hover:bg-[#FFC857]/10 transition-colors"
-            >
-              Demo Login (Development)
-            </button>
-          </div>
         </form>
 
         <p className="mt-6 text-center text-gray-500 text-sm">

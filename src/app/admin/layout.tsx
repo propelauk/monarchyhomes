@@ -39,12 +39,11 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const router = useRouter()
 
   useEffect(() => {
-    // In production, check auth state here
-    // If not authenticated, redirect to login
+    // Check auth state
     const isAuth = localStorage.getItem('monarchy_admin_auth')
     if (!isAuth && pathname !== '/admin/login') {
-      // For demo purposes, we'll allow access
-      // router.push('/admin/login')
+      // Not authenticated - redirect to login
+      router.push('/admin/login')
     }
     
     const storedName = localStorage.getItem('monarchy_admin_name')
@@ -56,6 +55,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const handleLogout = () => {
     localStorage.removeItem('monarchy_admin_auth')
     localStorage.removeItem('monarchy_admin_name')
+    localStorage.removeItem('monarchy_admin_email')
     router.push('/admin/login')
   }
 

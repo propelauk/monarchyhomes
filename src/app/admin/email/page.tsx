@@ -97,40 +97,8 @@ export default function EmailCenterPage() {
       }
     } catch (error) {
       console.error('Failed to fetch logs:', error)
-      // Mock data for demo
-      setEmailLogs([
-        {
-          id: '1',
-          recipient_email: 'john@example.com',
-          subject: 'Thank You for Your Enquiry',
-          status: 'delivered',
-          email_type: 'transactional',
-          template: 'lead_confirmation',
-          created_at: new Date().toISOString(),
-          sent_at: new Date().toISOString(),
-        },
-        {
-          id: '2',
-          recipient_email: 'sarah@example.com',
-          subject: 'Your HMO Assessment is Ready',
-          status: 'opened',
-          email_type: 'transactional',
-          template: 'assessment_complete',
-          created_at: new Date(Date.now() - 86400000).toISOString(),
-          sent_at: new Date(Date.now() - 86400000).toISOString(),
-          opened_at: new Date(Date.now() - 43200000).toISOString(),
-        },
-        {
-          id: '3',
-          recipient_email: 'mike@example.com',
-          subject: "We're Still Here to Help",
-          status: 'sent',
-          email_type: 'marketing',
-          template: 'follow_up',
-          created_at: new Date(Date.now() - 172800000).toISOString(),
-          sent_at: new Date(Date.now() - 172800000).toISOString(),
-        },
-      ])
+      // Empty state for production
+      setEmailLogs([])
     } finally {
       setLoading(false)
     }

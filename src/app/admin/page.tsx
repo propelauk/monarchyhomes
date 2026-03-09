@@ -61,29 +61,17 @@ export default function AdminDashboardPage() {
       }
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error)
-      // Set mock data for demo
+      // Set empty state - no mock data for production
       setStats({
-        totalLeads: 127,
-        newLeads: 12,
-        contacted: 45,
-        qualified: 38,
-        converted: 22,
-        conversionRate: 17.3,
-        weeklyData: [
-          { date: 'Mon', count: 3 },
-          { date: 'Tue', count: 5 },
-          { date: 'Wed', count: 2 },
-          { date: 'Thu', count: 8 },
-          { date: 'Fri', count: 4 },
-          { date: 'Sat', count: 1 },
-          { date: 'Sun', count: 2 },
-        ]
+        totalLeads: 0,
+        newLeads: 0,
+        contacted: 0,
+        qualified: 0,
+        converted: 0,
+        conversionRate: 0,
+        weeklyData: []
       })
-      setRecentLeads([
-        { id: '1', full_name: 'John Smith', phone: '07123456789', email: 'john@email.com', status: 'new', lead_type: 'assessment', created_at: new Date().toISOString() },
-        { id: '2', full_name: 'Sarah Johnson', phone: '07987654321', status: 'contacted', lead_type: 'callback', created_at: new Date(Date.now() - 3600000).toISOString() },
-        { id: '3', full_name: 'Mike Williams', phone: '07555555555', email: 'mike@example.com', status: 'qualified', lead_type: 'assessment', created_at: new Date(Date.now() - 7200000).toISOString() },
-      ])
+      setRecentLeads([])
     } finally {
       setLoading(false)
     }

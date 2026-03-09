@@ -54,29 +54,23 @@ export default function AnalyticsPage() {
       }
     } catch (error) {
       console.error('Failed to fetch analytics:', error)
-      // Mock data for demo
+      // Empty state for production
       setData({
         period,
-        totalEvents: 1543,
-        pageViews: 892,
-        ctaClicks: 234,
-        formSubmits: 47,
-        topPages: [
-          { url: '/', count: 456 },
-          { url: '/services/hmo-management', count: 123 },
-          { url: '/contact', count: 98 },
-          { url: '/resources/hmo-licensing-guide', count: 87 },
-          { url: '/about', count: 76 },
-        ],
-        deviceBreakdown: { desktop: 524, mobile: 312, tablet: 56 },
+        totalEvents: 0,
+        pageViews: 0,
+        ctaClicks: 0,
+        formSubmits: 0,
+        topPages: [],
+        deviceBreakdown: { desktop: 0, mobile: 0, tablet: 0 },
         funnel: {
-          pageViews: 892,
-          ctaClicks: 234,
-          formStarts: 156,
-          formSubmits: 47,
-          ctaRate: 26,
-          formStartRate: 67,
-          conversionRate: 30,
+          pageViews: 0,
+          ctaClicks: 0,
+          formStarts: 0,
+          formSubmits: 0,
+          ctaRate: 0,
+          formStartRate: 0,
+          conversionRate: 0,
         },
       })
     } finally {

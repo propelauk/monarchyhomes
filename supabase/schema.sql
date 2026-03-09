@@ -47,10 +47,11 @@ CREATE INDEX IF NOT EXISTS idx_leads_portfolio_owner ON leads(portfolio_owner);
 -- 2. ADMIN USERS TABLE
 -- ============================================
 CREATE TABLE IF NOT EXISTS admin_users (
-    id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     full_name TEXT NOT NULL,
     email TEXT NOT NULL UNIQUE,
-    role TEXT DEFAULT 'manager', -- 'admin', 'manager'
+    password_hash TEXT, -- SHA256 hashed password
+    role TEXT DEFAULT 'admin', -- 'super_admin', 'admin', 'viewer'
     avatar_url TEXT,
     is_active BOOLEAN DEFAULT TRUE,
     last_login TIMESTAMPTZ,

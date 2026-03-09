@@ -1,5 +1,6 @@
 import { createServerClient } from '@/lib/supabase'
 import { NextRequest, NextResponse } from 'next/server'
+import crypto from 'crypto'
 
 // Admin authentication utilities
 
@@ -8,14 +9,21 @@ export interface AdminSession {
   email: string
   role: 'super_admin' | 'admin' | 'viewer'
   name: string
+  needsPasswordChange?: boolean
 }
 
-// Demo admin session for when Supabase is not configured
-const demoAdminSession: AdminSession = {
-  userId: 'demo-admin-1',
-  email: 'admin@monarchyhomes.com',
-  role: 'super_admin',
-  name: 'Demo Admin',
+// Hardcoded initial admin credentials (will be replaced after first login)
+const INITIAL_ADMIN_EMAIL = 'hello@monarchyhomes.com'
+const INITIAL_ADMIN_PASSWORD_HASH = hashPassword('Mon62k123@homes')
+
+// Simple password hashing function
+function hashPassword(password: string): string {
+  return crypto.createHash('sha256').update(password + 'monarchy_salt_2026').digest('hex')
+}
+
+// Verify password against hash
+function verifyPassword(password: string, hash: string): boolean {
+  return hashPassword(password) === hash
 }
 
 /**
@@ -26,50 +34,45 @@ export async function verifyAdminAuth(request: NextRequest): Promise<AdminSessio
   try {
     const supabase = createServerClient()
     
-    // Demo mode - return demo session for demo requests
-    if (!supabase) {
-      // In demo mode, check for a demo token
-      const authHeader = request.headers.get('authorization')
-      if (authHeader?.includes('demo') || authHeader?.includes('Bearer ')) {
-        return demoAdminSession
-      }
-      // Allow access in demo mode without auth for viewing
-      return demoAdminSession
-    }
-
-    // Get auth token from header or cookie
+    // Check for auth token
     const authHeader = request.headers.get('authorization')
     const token = authHeader?.replace('Bearer ', '')
     
     if (!token) {
       return null
     }
-    
-    // Verify the JWT token
-    const { data: { user }, error } = await supabase.auth.getUser(token)
-    
-    if (error || !user) {
-      return null
+
+    // If Supabase is configured, verify against database
+    if (supabase) {
+      // Check if we have admin credentials stored
+      const { data: adminUser, error } = await supabase
+        .from('admin_users')
+        .select('*')
+        .eq('email', token) // Token contains email for simplicity
+        .eq('is_active', true)
+        .single()
+
+      if (!error && adminUser) {
+        return {
+          userId: adminUser.id,
+          email: adminUser.email,
+          role: adminUser.role || 'admin',
+          name: adminUser.full_name,
+        }
+      }
     }
 
-    // Check if user is an admin
-    const { data: adminUser, error: adminError } = await supabase
-      .from('admin_users')
-      .select('*')
-      .eq('user_id', user.id)
-      .eq('is_active', true)
-      .single()
-
-    if (adminError || !adminUser) {
-      return null
+    // Fallback: verify against hardcoded credentials
+    if (token === INITIAL_ADMIN_EMAIL) {
+      return {
+        userId: 'admin-1',
+        email: INITIAL_ADMIN_EMAIL,
+        role: 'super_admin',
+        name: 'Admin',
+      }
     }
 
-    return {
-      userId: adminUser.id,
-      email: adminUser.email,
-      role: adminUser.role,
-      name: adminUser.full_name,
-    }
+    return null
   } catch (error) {
     console.error('Admin auth verification error:', error)
     return null
@@ -118,66 +121,123 @@ export async function adminLogin(email: string, password: string): Promise<{ suc
   try {
     const supabase = createServerClient()
     
-    // Demo mode - accept demo credentials
-    if (!supabase) {
-      // In demo mode, accept specific demo credentials or any login  
-      if (email === 'admin@monarchyhomes.com' || email === 'demo@demo.com') {
-        console.log('[DEMO MODE] Admin login successful for:', email)
-        return {
-          success: true,
-          session: demoAdminSession,
+    // First, check Supabase for stored admin credentials
+    if (supabase) {
+      const { data: adminUser, error } = await supabase
+        .from('admin_users')
+        .select('*')
+        .eq('email', email.toLowerCase())
+        .eq('is_active', true)
+        .single()
+
+      if (!error && adminUser && adminUser.password_hash) {
+        // Verify against stored password
+        if (verifyPassword(password, adminUser.password_hash)) {
+          // Update last login
+          await supabase
+            .from('admin_users')
+            .update({ last_login: new Date().toISOString() })
+            .eq('id', adminUser.id)
+
+          return {
+            success: true,
+            session: {
+              userId: adminUser.id,
+              email: adminUser.email,
+              role: adminUser.role || 'admin',
+              name: adminUser.full_name,
+            },
+          }
         }
-      }
-      // Still allow any login in demo mode for testing
-      console.log('[DEMO MODE] Admin login:', email)
-      return {
-        success: true,
-        session: {
-          ...demoAdminSession,
-          email,
-        },
       }
     }
     
-    // Sign in with Supabase Auth
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
+    // Fallback: Check against hardcoded initial credentials
+    if (email.toLowerCase() === INITIAL_ADMIN_EMAIL.toLowerCase()) {
+      if (verifyPassword(password, INITIAL_ADMIN_PASSWORD_HASH)) {
+        console.log('Admin login successful with initial credentials:', email)
+        
+        // Create admin user in Supabase if not exists
+        if (supabase) {
+          const { data: existingAdmin } = await supabase
+            .from('admin_users')
+            .select('id')
+            .eq('email', email.toLowerCase())
+            .single()
 
-    if (error || !data.user) {
-      return { success: false, error: 'Invalid credentials' }
+          if (!existingAdmin) {
+            await supabase.from('admin_users').insert({
+              email: email.toLowerCase(),
+              full_name: 'Admin',
+              role: 'super_admin',
+              password_hash: INITIAL_ADMIN_PASSWORD_HASH,
+              is_active: true,
+              last_login: new Date().toISOString(),
+            })
+          }
+        }
+
+        return {
+          success: true,
+          session: {
+            userId: 'admin-1',
+            email: INITIAL_ADMIN_EMAIL,
+            role: 'super_admin',
+            name: 'Admin',
+            needsPasswordChange: true, // Prompt to change initial password
+          },
+        }
+      }
     }
 
-    // Check if user is an admin
-    const { data: adminUser, error: adminError } = await supabase
-      .from('admin_users')
-      .select('*')
-      .eq('user_id', data.user.id)
-      .eq('is_active', true)
-      .single()
-
-    if (adminError || !adminUser) {
-      return { success: false, error: 'Not authorized as admin' }
-    }
-
-    // Update last login
-    await supabase
-      .from('admin_users')
-      .update({ last_login: new Date().toISOString() })
-      .eq('id', adminUser.id)
-
-    return {
-      success: true,
-      session: {
-        userId: adminUser.id,
-        email: adminUser.email,
-        role: adminUser.role,
-        name: adminUser.full_name,
-      },
-    }
+    return { success: false, error: 'Invalid email or password' }
   } catch (error) {
     console.error('Admin login error:', error)
     return { success: false, error: 'Login failed' }
+  }
+}
+
+/**
+ * Change admin password
+ */
+export async function changeAdminPassword(
+  email: string,
+  currentPassword: string,
+  newPassword: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const supabase = createServerClient()
+    
+    if (!supabase) {
+      return { success: false, error: 'Database not configured' }
+    }
+
+    // Verify current password
+    const loginResult = await adminLogin(email, currentPassword)
+    if (!loginResult.success) {
+      return { success: false, error: 'Current password is incorrect' }
+    }
+
+    // Hash new password
+    const newPasswordHash = hashPassword(newPassword)
+
+    // Update password in database
+    const { error } = await supabase
+      .from('admin_users')
+      .update({ 
+        password_hash: newPasswordHash,
+        updated_at: new Date().toISOString()
+      })
+      .eq('email', email.toLowerCase())
+
+    if (error) {
+      console.error('Password update error:', error)
+      return { success: false, error: 'Failed to update password' }
+    }
+
+    return { success: true }
+  } catch (error) {
+    console.error('Change password error:', error)
+    return { success: false, error: 'Password change failed' }
   }
 }

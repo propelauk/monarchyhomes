@@ -71,48 +71,8 @@ export default function ResourcesPage() {
       }
     } catch (error) {
       console.error('Failed to fetch resources:', error)
-      // Mock data for demo
-      setResources([
-        {
-          id: '1',
-          title: 'HMO Licensing Guide 2024',
-          description: 'Complete guide to obtaining and maintaining HMO licenses in Gloucestershire',
-          category: 'hmo_licensing',
-          file_url: '/resources/hmo-licensing-guide.pdf',
-          file_name: 'hmo-licensing-guide.pdf',
-          file_size: 2456000,
-          file_type: 'application/pdf',
-          is_public: true,
-          download_count: 127,
-          created_at: new Date().toISOString(),
-        },
-        {
-          id: '2',
-          title: 'Fire Safety Compliance Checklist',
-          description: 'Essential fire safety requirements for HMO properties',
-          category: 'compliance',
-          file_url: '/resources/fire-safety-checklist.pdf',
-          file_name: 'fire-safety-checklist.pdf',
-          file_size: 890000,
-          file_type: 'application/pdf',
-          is_public: true,
-          download_count: 89,
-          created_at: new Date(Date.now() - 86400000).toISOString(),
-        },
-        {
-          id: '3',
-          title: 'Gloucestershire HMO Market Report Q4',
-          description: 'Quarterly market analysis for HMO investments',
-          category: 'market_reports',
-          file_url: '/resources/market-report-q4.pdf',
-          file_name: 'market-report-q4.pdf',
-          file_size: 3200000,
-          file_type: 'application/pdf',
-          is_public: false,
-          download_count: 34,
-          created_at: new Date(Date.now() - 172800000).toISOString(),
-        },
-      ])
+      // Empty state for production
+      setResources([])
     } finally {
       setLoading(false)
     }
@@ -143,9 +103,6 @@ export default function ResourcesPage() {
       }
     } catch (error) {
       console.error('Failed to save resource:', error)
-      // For demo, simulate success
-      closeModal()
-      fetchResources()
     } finally {
       setSaving(false)
     }

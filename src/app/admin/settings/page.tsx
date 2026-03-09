@@ -1,25 +1,43 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { 
   User, 
   Bell, 
   Mail, 
   Shield, 
-  Palette, 
   Save,
   Loader2,
-  Check
+  Check,
+  Eye,
+  EyeOff,
+  AlertCircle
 } from 'lucide-react'
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState('profile')
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [adminEmail, setAdminEmail] = useState('')
+  
+  // Password change state
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  })
+  const [showPasswords, setShowPasswords] = useState({
+    current: false,
+    new: false,
+    confirm: false,
+  })
+  const [passwordError, setPasswordError] = useState('')
+  const [passwordSuccess, setPasswordSuccess] = useState(false)
+  const [changingPassword, setChangingPassword] = useState(false)
   
   const [profile, setProfile] = useState({
     name: 'Admin User',
-    email: 'admin@monarchyhomes.com',
+    email: 'hello@monarchyhomes.com',
     phone: '01452 452308',
   })
   
@@ -37,6 +55,14 @@ export default function SettingsPage() {
     signature: 'Best regards,\nThe Monarchy Homes Team',
   })
 
+  useEffect(() => {
+    const storedEmail = localStorage.getItem('monarchy_admin_email')
+    if (storedEmail) {
+      setAdminEmail(storedEmail)
+      setProfile(prev => ({ ...prev, email: storedEmail }))
+    }
+  }, [])
+
   const handleSave = async () => {
     setSaving(true)
     // Simulate API call
@@ -44,6 +70,56 @@ export default function SettingsPage() {
     setSaving(false)
     setSaved(true)
     setTimeout(() => setSaved(false), 3000)
+  }
+
+  const handleChangePassword = async () => {
+    setPasswordError('')
+    setPasswordSuccess(false)
+
+    // Validation
+    if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
+      setPasswordError('All fields are required')
+      return
+    }
+
+    if (passwordData.newPassword.length < 8) {
+      setPasswordError('New password must be at least 8 characters')
+      return
+    }
+
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      setPasswordError('New passwords do not match')
+      return
+    }
+
+    setChangingPassword(true)
+
+    try {
+      const res = await fetch('/api/auth/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: adminEmail || profile.email,
+          currentPassword: passwordData.currentPassword,
+          newPassword: passwordData.newPassword,
+        }),
+      })
+
+      const data = await res.json()
+
+      if (!data.success) {
+        setPasswordError(data.error || 'Failed to change password')
+        return
+      }
+
+      setPasswordSuccess(true)
+      setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' })
+      setTimeout(() => setPasswordSuccess(false), 5000)
+    } catch {
+      setPasswordError('Connection error. Please try again.')
+    } finally {
+      setChangingPassword(false)
+    }
   }
 
   return (
@@ -199,49 +275,97 @@ export default function SettingsPage() {
             <div className="space-y-6">
               <div>
                 <h4 className="font-medium text-gray-900 mb-3">Change Password</h4>
+                
+                {passwordError && (
+                  <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4" />
+                    {passwordError}
+                  </div>
+                )}
+
+                {passwordSuccess && (
+                  <div className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm flex items-center gap-2">
+                    <Check className="w-4 h-4" />
+                    Password changed successfully!
+                  </div>
+                )}
+
                 <div className="space-y-4 max-w-md">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
-                    <input
-                      type="password"
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#FFC857] focus:border-transparent"
-                    />
+                    <div className="relative">
+                      <input
+                        type={showPasswords.current ? 'text' : 'password'}
+                        value={passwordData.currentPassword}
+                        onChange={(e) => setPasswordData(prev => ({ ...prev, currentPassword: e.target.value }))}
+                        className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#FFC857] focus:border-transparent pr-12"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPasswords(prev => ({ ...prev, current: !prev.current }))}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      >
+                        {showPasswords.current ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      </button>
+                    </div>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
-                    <input
-                      type="password"
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#FFC857] focus:border-transparent"
-                    />
+                    <div className="relative">
+                      <input
+                        type={showPasswords.new ? 'text' : 'password'}
+                        value={passwordData.newPassword}
+                        onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
+                        className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#FFC857] focus:border-transparent pr-12"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPasswords(prev => ({ ...prev, new: !prev.new }))}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      >
+                        {showPasswords.new ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      </button>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">Minimum 8 characters</p>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
-                    <input
-                      type="password"
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#FFC857] focus:border-transparent"
-                    />
+                    <div className="relative">
+                      <input
+                        type={showPasswords.confirm ? 'text' : 'password'}
+                        value={passwordData.confirmPassword}
+                        onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                        className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#FFC857] focus:border-transparent pr-12"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPasswords(prev => ({ ...prev, confirm: !prev.confirm }))}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      >
+                        {showPasswords.confirm ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      </button>
+                    </div>
                   </div>
+                  <button
+                    onClick={handleChangePassword}
+                    disabled={changingPassword}
+                    className="px-4 py-2.5 bg-[#FFC857] text-[#0D1B2A] rounded-lg font-medium hover:bg-[#ffd278] disabled:opacity-50 flex items-center gap-2"
+                  >
+                    {changingPassword ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <Shield className="w-5 h-5" />
+                    )}
+                    Update Password
+                  </button>
                 </div>
               </div>
 
               <div className="pt-6 border-t">
-                <h4 className="font-medium text-gray-900 mb-3">Two-Factor Authentication</h4>
-                <p className="text-sm text-gray-500 mb-3">
-                  Add an extra layer of security to your account
+                <h4 className="font-medium text-gray-900 mb-3">Session Information</h4>
+                <p className="text-sm text-gray-500">
+                  Logged in as: <span className="font-medium text-gray-700">{adminEmail || profile.email}</span>
                 </p>
-                <button className="px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50">
-                  Enable 2FA
-                </button>
-              </div>
-
-              <div className="pt-6 border-t">
-                <h4 className="font-medium text-red-600 mb-3">Danger Zone</h4>
-                <p className="text-sm text-gray-500 mb-3">
-                  Permanently delete your admin account
-                </p>
-                <button className="px-4 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50">
-                  Delete Account
-                </button>
               </div>
             </div>
           )}
