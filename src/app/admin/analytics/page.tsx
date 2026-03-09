@@ -33,6 +33,12 @@ interface AnalyticsData {
     formStartRate: number
     conversionRate: number
   }
+  trends: {
+    pageViews: number
+    ctaClicks: number
+    formSubmits: number
+    conversionRate: number
+  }
 }
 
 export default function AnalyticsPage() {
@@ -70,6 +76,12 @@ export default function AnalyticsPage() {
           formSubmits: 0,
           ctaRate: 0,
           formStartRate: 0,
+          conversionRate: 0,
+        },
+        trends: {
+          pageViews: 0,
+          ctaClicks: 0,
+          formSubmits: 0,
           conversionRate: 0,
         },
       })
@@ -121,28 +133,28 @@ export default function AnalyticsPage() {
           title="Page Views"
           value={data?.pageViews || 0}
           icon={Eye}
-          trend={+12.5}
+          trend={data?.trends?.pageViews ?? 0}
           color="blue"
         />
         <StatCard
           title="CTA Clicks"
           value={data?.ctaClicks || 0}
           icon={MousePointer}
-          trend={+8.3}
+          trend={data?.trends?.ctaClicks ?? 0}
           color="yellow"
         />
         <StatCard
           title="Form Submissions"
           value={data?.formSubmits || 0}
           icon={FileEdit}
-          trend={+15.2}
+          trend={data?.trends?.formSubmits ?? 0}
           color="green"
         />
         <StatCard
           title="Conversion Rate"
           value={`${data?.funnel.conversionRate || 0}%`}
           icon={CheckCircle}
-          trend={+3.7}
+          trend={data?.trends?.conversionRate ?? 0}
           color="purple"
         />
       </div>

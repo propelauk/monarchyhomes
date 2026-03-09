@@ -89,28 +89,45 @@ export async function GET(request: NextRequest) {
             formStartRate: 0,
             conversionRate: 0,
           },
+          trends: {
+            pageViews: 0,
+            ctaClicks: 0,
+            formSubmits: 0,
+            conversionRate: 0,
+          },
         },
       })
     }
 
-    // Calculate date range
+    // Calculate date range for current and previous periods
     const now = new Date()
     let startDate: Date
+    let prevStartDate: Date
+    let prevEndDate: Date
+    
     switch (period) {
       case '24h':
         startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000)
+        prevEndDate = new Date(startDate.getTime())
+        prevStartDate = new Date(startDate.getTime() - 24 * 60 * 60 * 1000)
         break
       case '7d':
         startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+        prevEndDate = new Date(startDate.getTime())
+        prevStartDate = new Date(startDate.getTime() - 7 * 24 * 60 * 60 * 1000)
         break
       case '30d':
         startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
+        prevEndDate = new Date(startDate.getTime())
+        prevStartDate = new Date(startDate.getTime() - 30 * 24 * 60 * 60 * 1000)
         break
       default:
         startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+        prevEndDate = new Date(startDate.getTime())
+        prevStartDate = new Date(startDate.getTime() - 7 * 24 * 60 * 60 * 1000)
     }
 
-    // Get events
+    // Get current period events
     const { data: events, error } = await supabase
       .from('analytics_events')
       .select('*')
@@ -121,11 +138,42 @@ export async function GET(request: NextRequest) {
       throw new Error(error.message)
     }
 
-    // Aggregate data
+    // Get previous period events for trend calculation
+    const { data: prevEvents } = await supabase
+      .from('analytics_events')
+      .select('*')
+      .gte('created_at', prevStartDate.toISOString())
+      .lt('created_at', prevEndDate.toISOString())
+
+    // Aggregate current period data
     const totalPageViews = events?.filter(e => e.event_type === 'page_view').length || 0
     const totalCtaClicks = events?.filter(e => e.event_type === 'cta_click').length || 0
     const totalFormStarts = events?.filter(e => e.event_type === 'form_start').length || 0
     const totalFormSubmits = events?.filter(e => e.event_type === 'form_submit').length || 0
+
+    // Aggregate previous period data for trends
+    const prevPageViews = prevEvents?.filter(e => e.event_type === 'page_view').length || 0
+    const prevCtaClicks = prevEvents?.filter(e => e.event_type === 'cta_click').length || 0
+    const prevFormSubmits = prevEvents?.filter(e => e.event_type === 'form_submit').length || 0
+    const prevFormStarts = prevEvents?.filter(e => e.event_type === 'form_start').length || 0
+
+    // Calculate trend percentages (compare to previous period)
+    const calculateTrend = (current: number, previous: number): number => {
+      if (previous === 0) {
+        return current > 0 ? 100 : 0 // If no previous data, show 100% if we have current data
+      }
+      return Math.round(((current - previous) / previous) * 100 * 10) / 10 // One decimal place
+    }
+
+    const prevConversionRate = prevFormStarts > 0 ? (prevFormSubmits / prevFormStarts) * 100 : 0
+    const currentConversionRate = totalFormStarts > 0 ? (totalFormSubmits / totalFormStarts) * 100 : 0
+
+    const trends = {
+      pageViews: calculateTrend(totalPageViews, prevPageViews),
+      ctaClicks: calculateTrend(totalCtaClicks, prevCtaClicks),
+      formSubmits: calculateTrend(totalFormSubmits, prevFormSubmits),
+      conversionRate: calculateTrend(currentConversionRate, prevConversionRate),
+    }
 
     // Top pages
     const pageViews = events?.filter(e => e.event_type === 'page_view') || []
@@ -169,6 +217,7 @@ export async function GET(request: NextRequest) {
         topPages,
         deviceBreakdown: deviceCounts,
         funnel: funnelData,
+        trends,
       },
     })
   } catch (error) {
