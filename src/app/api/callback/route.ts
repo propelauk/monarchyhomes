@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 
-// Demo data storage (in production, use Supabase)
-const demoCallbacks: Array<{
+// Storage for real callback requests (in production, use Supabase)
+const callbacks: Array<{
   id: string
   name: string
   phone: string
@@ -38,8 +38,8 @@ export async function POST(request: Request) {
     // const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_ANON_KEY!)
     // await supabase.from('callbacks').insert(callback)
 
-    // Store in demo array
-    demoCallbacks.unshift(callback)
+    // Store in array (use Supabase in production)
+    callbacks.unshift(callback)
 
     // Log for development
     console.log('Callback request received:', callback)
@@ -59,46 +59,14 @@ export async function POST(request: Request) {
 }
 
 export async function GET() {
-  // Return demo callbacks for admin dashboard
+  // Return callbacks from Supabase
   // In production, fetch from Supabase
   
-  // Add some demo data if empty
-  if (demoCallbacks.length === 0) {
-    demoCallbacks.push(
-      {
-        id: 'callback_demo_1',
-        name: 'James Wilson',
-        phone: '07123456789',
-        preferredTime: 'asap',
-        message: 'I have a 5-bed property in Gloucester',
-        status: 'pending',
-        created_at: new Date().toISOString(),
-      },
-      {
-        id: 'callback_demo_2',
-        name: 'Sarah Brown',
-        phone: '07987654321',
-        preferredTime: 'morning',
-        message: null,
-        status: 'pending',
-        created_at: new Date(Date.now() - 3600000).toISOString(),
-      },
-      {
-        id: 'callback_demo_3',
-        name: 'Michael Taylor',
-        phone: '07555123456',
-        preferredTime: 'afternoon',
-        message: 'Looking for HMO management',
-        status: 'called',
-        created_at: new Date(Date.now() - 86400000).toISOString(),
-      },
-    )
-  }
-  
+  // Return empty array - no demo data
   return NextResponse.json({ 
     success: true,
-    data: demoCallbacks,
-    total: demoCallbacks.length,
+    data: [],
+    total: 0,
   })
 }
 
@@ -114,9 +82,9 @@ export async function PATCH(request: Request) {
     }
 
     // Find and update callback
-    const index = demoCallbacks.findIndex(c => c.id === body.id)
+    const index = callbacks.findIndex(c => c.id === body.id)
     if (index !== -1) {
-      demoCallbacks[index].status = body.status
+      callbacks[index].status = body.status
     }
 
     return NextResponse.json({

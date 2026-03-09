@@ -68,31 +68,26 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams
     const period = searchParams.get('period') || '7d'
 
-    // Demo mode - return sample data
+    // No Supabase - return empty analytics
     if (!supabase) {
       return NextResponse.json({
         success: true,
         data: {
           period,
-          totalEvents: 1250,
-          pageViews: 850,
-          ctaClicks: 180,
-          formSubmits: 47,
-          topPages: [
-            { url: '/', count: 450 },
-            { url: '/services/hmo-property-management', count: 180 },
-            { url: '/services/single-let-management', count: 120 },
-            { url: '/resources/free-assessment', count: 100 },
-          ],
-          deviceBreakdown: { desktop: 520, mobile: 290, tablet: 40 },
+          totalEvents: 0,
+          pageViews: 0,
+          ctaClicks: 0,
+          formSubmits: 0,
+          topPages: [],
+          deviceBreakdown: { desktop: 0, mobile: 0, tablet: 0 },
           funnel: {
-            pageViews: 850,
-            ctaClicks: 180,
-            formStarts: 95,
-            formSubmits: 47,
-            ctaRate: 21,
-            formStartRate: 53,
-            conversionRate: 49,
+            pageViews: 0,
+            ctaClicks: 0,
+            formStarts: 0,
+            formSubmits: 0,
+            ctaRate: 0,
+            formStartRate: 0,
+            conversionRate: 0,
           },
         },
       })

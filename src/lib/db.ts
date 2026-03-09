@@ -1,99 +1,6 @@
 import { Lead, CreateLeadRequest, UpdateLeadRequest, LeadFilters, PaginatedResponse, DashboardStats, LeadStatus, LeadActivity } from './types'
 import { createServerClient } from './supabase'
 
-// Demo mode check
-function isDemoMode() {
-  return !process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY
-}
-
-// Demo data for when Supabase is not configured
-const demoLeads: Lead[] = [
-  {
-    id: 'demo-1',
-    full_name: 'John Smith',
-    email: 'john.smith@example.com',
-    phone: '07700 900123',
-    property_postcode: 'GL1 1AB',
-    property_address: '42 High Street, Gloucester',
-    property_type: 'terraced',
-    ownership_status: 'owned',
-    property_timeline: 'ready_now',
-    number_of_rooms: 6,
-    has_license: 'yes',
-    licensed: true,
-    current_occupancy: 0,
-    current_management: 'self',
-    current_monthly_income: null,
-    portfolio_owner: false,
-    main_challenges: ['finding tenants', 'compliance'],
-    preferred_contact: 'email',
-    lead_source: 'website',
-    lead_type: 'assessment',
-    status: 'new',
-    tags: ['hmo', 'new-lead'],
-    notes: null,
-    assigned_to: null,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 'demo-2',
-    full_name: 'Sarah Johnson',
-    email: 'sarah.j@example.com',
-    phone: '07700 900456',
-    property_postcode: 'GL2 2CD',
-    property_address: '15 Park Lane, Cheltenham',
-    property_type: 'semi-detached',
-    ownership_status: 'buying',
-    property_timeline: '3_months',
-    number_of_rooms: 4,
-    has_license: 'no',
-    licensed: false,
-    current_occupancy: null,
-    current_management: null,
-    current_monthly_income: null,
-    portfolio_owner: true,
-    main_challenges: ['licensing', 'conversion costs'],
-    preferred_contact: 'phone',
-    lead_source: 'referral',
-    lead_type: 'consultation',
-    status: 'contacted',
-    tags: ['investor', 'multi-property'],
-    notes: 'Interested in HMO conversion',
-    assigned_to: null,
-    created_at: new Date(Date.now() - 86400000).toISOString(),
-    updated_at: new Date(Date.now() - 86400000).toISOString(),
-  },
-  {
-    id: 'demo-3',
-    full_name: 'Michael Brown',
-    email: 'mbrown@example.com',
-    phone: '07700 900789',
-    property_postcode: 'GL3 3EF',
-    property_address: '8 Manor Road, Stroud',
-    property_type: 'detached',
-    ownership_status: 'owned',
-    property_timeline: 'ready_now',
-    number_of_rooms: 8,
-    has_license: 'yes',
-    licensed: true,
-    current_occupancy: 5,
-    current_management: 'self',
-    current_monthly_income: 2400,
-    portfolio_owner: true,
-    main_challenges: ['tenant management', 'maintenance'],
-    preferred_contact: 'email',
-    lead_source: 'website',
-    lead_type: 'assessment',
-    status: 'qualified',
-    tags: ['high-value', 'ready'],
-    notes: 'Large property, high potential',
-    assigned_to: null,
-    created_at: new Date(Date.now() - 172800000).toISOString(),
-    updated_at: new Date(Date.now() - 86400000).toISOString(),
-  },
-]
-
 // ============================================
 // LEADS DATABASE OPERATIONS
 // ============================================
@@ -160,9 +67,9 @@ export async function createLead(data: CreateLeadRequest): Promise<Lead> {
 export async function getLead(id: string): Promise<Lead | null> {
   const supabase = createServerClient()
   
-  // Demo mode
+  // No Supabase - return null
   if (!supabase) {
-    return demoLeads.find(l => l.id === id) || null
+    return null
   }
   
   const { data, error } = await supabase
@@ -183,39 +90,14 @@ export async function getLeads(filters: LeadFilters = {}): Promise<PaginatedResp
   const supabase = createServerClient()
   const { status, licensed, portfolio_owner, start_date, end_date, search, page = 1, limit = 25 } = filters
   
-  // Demo mode
+  // No Supabase - return empty
   if (!supabase) {
-    let filteredLeads = [...demoLeads]
-    
-    if (status) {
-      filteredLeads = filteredLeads.filter(l => l.status === status)
-    }
-    if (licensed !== undefined) {
-      filteredLeads = filteredLeads.filter(l => l.licensed === licensed)
-    }
-    if (portfolio_owner !== undefined) {
-      filteredLeads = filteredLeads.filter(l => l.portfolio_owner === portfolio_owner)
-    }
-    if (search) {
-      const searchLower = search.toLowerCase()
-      filteredLeads = filteredLeads.filter(l => 
-        l.full_name.toLowerCase().includes(searchLower) ||
-        (l.property_postcode && l.property_postcode.toLowerCase().includes(searchLower)) ||
-        (l.email && l.email.toLowerCase().includes(searchLower))
-      )
-    }
-    
-    const total = filteredLeads.length
-    const from = (page - 1) * limit
-    const to = from + limit
-    filteredLeads = filteredLeads.slice(from, to)
-    
     return {
-      data: filteredLeads,
-      total,
+      data: [],
+      total: 0,
       page,
       limit,
-      totalPages: Math.ceil(total / limit),
+      totalPages: 0,
     }
   }
 
@@ -267,14 +149,9 @@ export async function getLeads(filters: LeadFilters = {}): Promise<PaginatedResp
 export async function updateLead(id: string, data: UpdateLeadRequest, performedBy?: string): Promise<Lead> {
   const supabase = createServerClient()
   
-  // Demo mode
+  // No Supabase - throw error
   if (!supabase) {
-    console.log('[DEMO MODE] Updating lead:', id, data)
-    const existingLead = demoLeads.find(l => l.id === id)
-    if (!existingLead) {
-      throw new Error('Lead not found')
-    }
-    return { ...existingLead, ...data, updated_at: new Date().toISOString() }
+    throw new Error('Database not configured')
   }
 
   // Get current lead for activity logging
@@ -380,30 +257,9 @@ export async function createLeadActivity(data: CreateActivityData): Promise<Lead
 export async function getLeadActivities(leadId: string): Promise<LeadActivity[]> {
   const supabase = createServerClient()
   
-  // Demo mode
+  // No Supabase - return empty
   if (!supabase) {
-    return [
-      {
-        id: 'activity-demo-1',
-        lead_id: leadId,
-        activity_type: 'status_change',
-        description: 'Status changed from new to contacted',
-        old_value: 'new',
-        new_value: 'contacted',
-        performed_by: 'Admin',
-        created_at: new Date(Date.now() - 86400000).toISOString(),
-      },
-      {
-        id: 'activity-demo-2',
-        lead_id: leadId,
-        activity_type: 'note_added',
-        description: 'Note was added',
-        old_value: null,
-        new_value: 'Initial contact made via phone',
-        performed_by: 'Admin',
-        created_at: new Date(Date.now() - 43200000).toISOString(),
-      },
-    ]
+    return []
   }
 
   const { data, error } = await supabase
@@ -426,28 +282,27 @@ export async function getLeadActivities(leadId: string): Promise<LeadActivity[]>
 export async function getDashboardStats(): Promise<DashboardStats> {
   const supabase = createServerClient()
   
-  // Demo mode - return sample stats
+  // No Supabase - return empty stats
   if (!supabase) {
-    console.log('[DEMO MODE] Getting dashboard stats')
     return {
-      totalLeads: 47,
-      leadsToday: 3,
-      leadsThisWeek: 12,
-      leadsThisMonth: 28,
-      conversionRate: 18.5,
+      totalLeads: 0,
+      leadsToday: 0,
+      leadsThisWeek: 0,
+      leadsThisMonth: 0,
+      conversionRate: 0,
       leadsByStatus: {
-        new: 15,
-        contacted: 12,
-        qualified: 8,
-        proposal_sent: 4,
-        negotiating: 3,
-        converted: 4,
-        lost: 1,
+        new: 0,
+        contacted: 0,
+        qualified: 0,
+        proposal_sent: 0,
+        negotiating: 0,
+        converted: 0,
+        lost: 0,
       },
-      licensedCount: 22,
-      unlicensedCount: 25,
-      portfolioOwnersCount: 18,
-      averageRooms: 5.8,
+      licensedCount: 0,
+      unlicensedCount: 0,
+      portfolioOwnersCount: 0,
+      averageRooms: 0,
     }
   }
   
@@ -528,21 +383,9 @@ export async function getDashboardStats(): Promise<DashboardStats> {
 export async function getWeeklyLeadsData(): Promise<{ date: string; count: number }[]> {
   const supabase = createServerClient()
   
-  // Demo mode - return sample weekly data
+  // No Supabase - return empty data
   if (!supabase) {
-    console.log('[DEMO MODE] Getting weekly leads data')
-    const demoData = []
-    const now = new Date()
-    for (let i = 11; i >= 0; i--) {
-      const weekStart = new Date(now)
-      weekStart.setDate(weekStart.getDate() - (i * 7))
-      const key = weekStart.toISOString().split('T')[0]
-      demoData.push({
-        date: key,
-        count: Math.floor(Math.random() * 8) + 2, // Random 2-10 leads per week
-      })
-    }
-    return demoData
+    return []
   }
   
   // Get last 12 weeks of data

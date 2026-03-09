@@ -60,34 +60,15 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '25')
 
-    // Demo mode - return sample email logs
+    // No Supabase - return empty email logs
     if (!supabase) {
       return NextResponse.json({
         success: true,
-        data: [
-          {
-            id: 'email-1',
-            to: 'john.smith@example.com',
-            subject: 'Welcome to Monarchy Homes',
-            status: 'delivered',
-            email_type: 'transactional',
-            template: 'lead_confirmation',
-            created_at: new Date().toISOString(),
-          },
-          {
-            id: 'email-2',
-            to: 'sarah.j@example.com',
-            subject: 'Free HMO Assessment Report',
-            status: 'delivered',
-            email_type: 'transactional',
-            template: 'assessment_complete',
-            created_at: new Date(Date.now() - 86400000).toISOString(),
-          },
-        ],
-        total: 2,
+        data: [],
+        total: 0,
         page: 1,
         limit: 25,
-        totalPages: 1,
+        totalPages: 0,
       })
     }
     
