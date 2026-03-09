@@ -308,6 +308,9 @@ function LeadsPageContent() {
                           <div>
                             <p className="font-medium text-gray-900">{lead.full_name}</p>
                             <p className="text-sm text-gray-500">{lead.phone}</p>
+                            {lead.email && (
+                              <p className="text-sm text-blue-600">{lead.email}</p>
+                            )}
                           </div>
                         </div>
                       </td>
