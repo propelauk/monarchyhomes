@@ -18,7 +18,7 @@ This guide helps you create a special "App Password" that allows the website to 
 
 ---
 
-### Step 2: Turn on 2-Step Verification (if not already on)
+### Step 2: Turn on 2-Step Verification (if not already on) (THIS IS VERY IMPORTANT)
 
 **Check if it's already on:**
 1. On the left side, click **Security**
@@ -62,7 +62,7 @@ This guide helps you create a special "App Password" that allows the website to 
    abcd efgh ijkl mnop
    ```
 
-9. **Write this down or copy it somewhere safe** - you won't see it again!
+9. **Write this down or copy it somewhere safe AND TAKE A PICTURE OF IT WITH YOUR PHONE. ** - you won't see it again! 
 
 10. Click **Done**
 
@@ -87,7 +87,7 @@ APP PASSWORD: abcdefghijklmnop
 
 ## What Happens Next
 
-Your developer will add these details to the website settings. After that:
+I will add these details to the website settings. After that:
 
 ✅ The website can send download emails from hello@monarchyhomes.com  
 ✅ Customers see emails coming from your official address  
@@ -96,7 +96,7 @@ Your developer will add these details to the website settings. After that:
 
 ---
 
-## How to Revoke Access Later (if needed)
+## How to Revoke Access Later (if needed) BUT IF YOU WANT THIS SETUP TO CONTINUE TO WORK DON'T REVOKE IT. ITS Not a direct password to your email. its just an API ACCESS PASSWORD THAT LETS YOUR WEBSITE SEND EMAILS TO YOUR CUSTOMERS AUTOMATICALLY BASED ON ACTIONS THEY TAKE IN YOUR WEBSITE e.g Download the Renters right act. 
 
 If you ever want to stop the website from sending emails:
 
@@ -111,7 +111,7 @@ If you ever want to stop the website from sending emails:
 
 If you get stuck on any step, you can:
 - Call Google Workspace support (if you have a paid plan)
-- Ask your developer to do a screen-share call to guide you
+- Ask me to do a screen-share call to guide you
 - Search YouTube for "Google App Password setup" for video tutorials
 
 ---

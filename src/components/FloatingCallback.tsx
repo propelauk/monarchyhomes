@@ -111,13 +111,15 @@ export function FloatingCallback() {
               className="fixed inset-0 bg-navy-900/60 backdrop-blur-sm z-50"
             />
 
-            {/* Modal */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="fixed inset-x-4 bottom-20 sm:bottom-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:inset-x-auto z-50 w-auto sm:w-full max-w-sm bg-white rounded-2xl shadow-2xl overflow-hidden"
-            >
+            {/* Modal Container - Centering wrapper */}
+            <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 pointer-events-none">
+              {/* Modal */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                className="w-full max-w-sm bg-white rounded-2xl shadow-2xl overflow-hidden pointer-events-auto max-h-[85vh] overflow-y-auto mb-16 sm:mb-0"
+              >
               {/* Header */}
               <div className="bg-navy-900 px-6 py-4 flex items-center justify-between">
                 <h3 className="text-white font-semibold text-lg">Call Me Back</h3>
@@ -226,6 +228,7 @@ export function FloatingCallback() {
                 )}
               </div>
             </motion.div>
+            </div>
           </>
         )}
       </AnimatePresence>
