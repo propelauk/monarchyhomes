@@ -1,22 +1,42 @@
 import { Resend } from 'resend'
+import nodemailer from 'nodemailer'
 import { createServerClient } from './supabase'
 import { Lead } from './types'
+
+// Email provider configuration
+type EmailProvider = 'resend' | 'gmail' | 'demo'
+
+function getEmailProvider(): EmailProvider {
+  if (process.env.RESEND_API_KEY) return 'resend'
+  if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) return 'gmail'
+  return 'demo'
+}
 
 // Lazy initialize Resend client
 let resendClient: Resend | null = null
 
 function getResendClient(): Resend | null {
-  if (!process.env.RESEND_API_KEY) {
-    console.warn('RESEND_API_KEY not configured - emails will not be sent')
-    return null
-  }
+  if (!process.env.RESEND_API_KEY) return null
   if (!resendClient) {
     resendClient = new Resend(process.env.RESEND_API_KEY)
   }
   return resendClient
 }
 
-const FROM_EMAIL = process.env.FROM_EMAIL || 'Monarchy Homes <noreply@monarchyhomes.com>'
+// Create Gmail transporter
+function getGmailTransporter() {
+  if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) return null
+  
+  return nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.GMAIL_USER,
+      pass: process.env.GMAIL_APP_PASSWORD,
+    },
+  })
+}
+
+const FROM_EMAIL = process.env.FROM_EMAIL || process.env.GMAIL_USER || 'Monarchy Homes <noreply@monarchyhomes.com>'
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'hello@monarchyhomes.com'
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://monarchyhomes.com'
 
@@ -34,10 +54,10 @@ interface SendEmailParams {
 export async function sendEmail(params: SendEmailParams): Promise<{ success: boolean; id?: string; error?: string }> {
   const { to, subject, html, text, leadId, template, emailType = 'transactional', sentBy } = params
   
-  const resend = getResendClient()
+  const provider = getEmailProvider()
   
-  // If no Resend client (no API key), skip email sending but don't fail
-  if (!resend) {
+  // Demo mode - no email provider configured
+  if (provider === 'demo') {
     console.log(`[Demo Mode] Would send email to ${to}: ${subject}`)
     return { success: true, id: 'demo-mode' }
   }
@@ -46,36 +66,63 @@ export async function sendEmail(params: SendEmailParams): Promise<{ success: boo
   try {
     supabase = createServerClient()
   } catch {
-    // If Supabase not configured, continue without logging
     supabase = null
   }
 
   try {
-    // Send email via Resend
-    const { data, error } = await resend.emails.send({
-      from: FROM_EMAIL,
-      to: [to],
-      subject,
-      html,
-      text,
-    })
+    let messageId: string | undefined
 
-    if (error) {
-      // Log failed email
-      if (supabase) {
-        await supabase.from('email_logs').insert({
-          lead_id: leadId,
-          recipient_email: to,
-          subject,
-          template,
-          email_type: emailType,
-          status: 'failed',
-          error_message: error.message,
-          sent_by: sentBy,
-        })
+    // Send via Gmail SMTP
+    if (provider === 'gmail') {
+      const transporter = getGmailTransporter()
+      if (!transporter) {
+        return { success: false, error: 'Gmail not configured' }
+      }
+
+      const info = await transporter.sendMail({
+        from: FROM_EMAIL,
+        to,
+        subject,
+        html,
+        text,
+      })
+      
+      messageId = info.messageId
+      console.log(`[Gmail] Email sent to ${to}: ${messageId}`)
+    }
+    
+    // Send via Resend
+    else if (provider === 'resend') {
+      const resend = getResendClient()
+      if (!resend) {
+        return { success: false, error: 'Resend not configured' }
+      }
+
+      const { data, error } = await resend.emails.send({
+        from: FROM_EMAIL,
+        to: [to],
+        subject,
+        html,
+        text,
+      })
+
+      if (error) {
+        if (supabase) {
+          await supabase.from('email_logs').insert({
+            lead_id: leadId,
+            recipient_email: to,
+            subject,
+            template,
+            email_type: emailType,
+            status: 'failed',
+            error_message: error.message,
+            sent_by: sentBy,
+          })
+        }
+        return { success: false, error: error.message }
       }
       
-      return { success: false, error: error.message }
+      messageId = data?.id
     }
 
     // Log successful email
@@ -87,12 +134,12 @@ export async function sendEmail(params: SendEmailParams): Promise<{ success: boo
         template,
         email_type: emailType,
         status: 'sent',
-        metadata: { resend_id: data?.id },
+        metadata: { message_id: messageId, provider },
         sent_by: sentBy,
       })
     }
 
-    return { success: true, id: data?.id }
+    return { success: true, id: messageId }
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : 'Unknown error'
     

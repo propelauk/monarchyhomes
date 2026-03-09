@@ -233,12 +233,17 @@ Create a `.env.local` file in the root directory with the following variables:
 # Supabase (Required for production)
 SUPABASE_URL=your_supabase_project_url
 SUPABASE_ANON_KEY=your_supabase_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 
-# Resend Email (Required for sending emails)
-RESEND_API_KEY=your_resend_api_key
-FROM_EMAIL=noreply@yourdomain.com
-ADMIN_EMAIL=admin@yourdomain.com
+# Email - Option 1: Gmail (Recommended for small businesses)
+GMAIL_USER=hello@yourdomain.com
+GMAIL_APP_PASSWORD=your16characterapppassword
+
+# Email - Option 2: Resend (Alternative for high volume)
+# RESEND_API_KEY=your_resend_api_key
+
+# Email Settings
+FROM_EMAIL=Your Business <hello@yourdomain.com>
+ADMIN_EMAIL=hello@yourdomain.com
 
 # Site URL
 NEXT_PUBLIC_SITE_URL=https://your-domain.com
@@ -251,12 +256,20 @@ NEXT_PUBLIC_SITE_URL=https://your-domain.com
 3. Copy the contents of `supabase/schema.sql` and run it to create all tables
 4. Copy your project URL and API keys from Settings > API
 
-### 4. Setting up Resend
+### 4. Setting up Email (Choose One)
+
+**Option A: Gmail (Recommended for small businesses)**
+
+1. Follow the guide in `docs/GMAIL_SETUP_GUIDE.md`
+2. Create an App Password at [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)
+3. Add `GMAIL_USER` and `GMAIL_APP_PASSWORD` to your `.env.local`
+
+**Option B: Resend (For higher volume)**
 
 1. Create an account at [resend.com](https://resend.com)
 2. Add and verify your domain
 3. Create an API key
-4. Add the API key to your `.env.local` file
+4. Add the `RESEND_API_KEY` to your `.env.local` file
 
 ### 5. Run Development Server
 
