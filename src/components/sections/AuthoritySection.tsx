@@ -46,7 +46,7 @@ const expertiseAreas = [
   {
     icon: Users,
     title: 'Single Let Management',
-    description: 'Not just HMOs — we provide the same expert-level management for traditional single let properties across Gloucestershire.',
+    description: 'Not just HMOs — we provide the same level of care for traditional single let properties across Gloucestershire.',
     features: ['Full Property Management', 'Tenant Sourcing', 'Rent Collection'],
   },
 ]
@@ -84,11 +84,10 @@ export function AuthoritySection() {
             Why Landlords Choose Us
           </span>
           <h2 className="section-heading">
-            Complete Property Management{' '}
-            <span className="text-gold-600">Expertise</span>
+            What We <span className="text-gold-600">Offer</span>
           </h2>
           <p className="section-subheading mx-auto">
-            From HMO compliance to single let management, we handle every aspect of your property investment with specialist knowledge.
+            From HMO compliance to single let management, we handle the day-to-day so you don&apos;t have to.
           </p>
         </motion.div>
 

@@ -42,7 +42,7 @@ export function CTASection() {
 
           {/* Description */}
           <p className="text-lg text-gray-400 mb-10 max-w-2xl mx-auto">
-            Book a free, no-obligation consultation. We&apos;ll assess your HMO or single let, identify opportunities to maximise income, and ensure full compliance.
+            Book a free, no-obligation chat. We&apos;ll discuss your property and how we might be able to help.
           </p>
 
           {/* CTA Buttons */}
@@ -54,7 +54,7 @@ export function CTASection() {
               onClick={handleBookReview}
               icon={<ArrowRight className="w-5 h-5" />}
             >
-              Book Your Free Income & Compliance Review
+              Get Your Free Assessment
             </Button>
             <Button
               href="tel:01452452308"
@@ -70,7 +70,7 @@ export function CTASection() {
 
           {/* Trust Text */}
           <p className="mt-8 text-sm text-gray-500">
-            No commitment required • Response within 24 hours • Local Gloucestershire experts
+            No commitment required • Response within 24 hours
           </p>
         </motion.div>
       </div>

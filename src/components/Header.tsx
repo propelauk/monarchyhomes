@@ -12,7 +12,6 @@ const navigation = [
   { name: 'Home', href: '/' },
   { name: 'Services', href: '#services' },
   { name: 'About', href: '#about' },
-  { name: 'Case Studies', href: '#case-studies' },
   { name: 'Resources', href: '#resources' },
   { name: 'Contact', href: '#contact' },
 ]
@@ -37,7 +36,7 @@ export function Header() {
               />
               <div>
                 <span className="text-base sm:text-xl font-serif font-bold text-navy-900">Monarchy Homes</span>
-                <p className="text-[10px] sm:text-xs text-charcoal-500 -mt-0.5">HMO Specialists</p>
+                <p className="text-[10px] sm:text-xs text-charcoal-500 -mt-0.5">Reliability & Trust</p>
               </div>
             </Link>
 
@@ -56,13 +55,13 @@ export function Header() {
 
             {/* CTA Buttons */}
             <div className="hidden lg:flex items-center space-x-4">
-              <a
-                href={`tel:${SITE_CONFIG.phone}`}
+              <button
+                onClick={openCallback}
                 className="flex items-center space-x-2 text-charcoal-700 hover:text-navy-900 font-medium transition-colors"
               >
                 <Phone className="w-4 h-4" />
-                <span>{SITE_CONFIG.phone}</span>
-              </a>
+                <span>Contact Us</span>
+              </button>
               <Link
                 href="#assessment"
                 className="btn-primary text-sm px-5 py-2.5"
@@ -107,13 +106,16 @@ export function Header() {
                   </Link>
                 ))}
               <div className="pt-4 border-t border-gray-100 space-y-3">
-                <a
-                  href={`tel:${SITE_CONFIG.phone}`}
-                  className="flex items-center justify-center space-x-2 px-4 py-3 text-navy-900 font-semibold"
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false)
+                    openCallback()
+                  }}
+                  className="flex items-center justify-center space-x-2 px-4 py-3 text-navy-900 font-semibold w-full"
                 >
                   <Phone className="w-5 h-5" />
-                  <span>{SITE_CONFIG.phone}</span>
-                </a>
+                  <span>Contact Us</span>
+                </button>
                 <Link
                   href="#assessment"
                   onClick={() => setIsMobileMenuOpen(false)}

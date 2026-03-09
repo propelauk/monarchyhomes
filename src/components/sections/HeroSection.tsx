@@ -54,7 +54,7 @@ export function HeroSection() {
             className="inline-flex items-center space-x-2 bg-gold-500/20 border border-gold-500/30 rounded-full px-4 py-2 mb-6"
           >
             <CheckCircle className="w-4 h-4 text-gold-500" />
-            <span className="text-gold-500 text-sm font-medium">Gloucestershire&apos;s Trusted HMO & Single Let Specialists</span>
+            <span className="text-gold-500 text-sm font-medium">Property Management in Gloucestershire</span>
           </motion.div>
 
           {/* Headline */}
@@ -86,7 +86,7 @@ export function HeroSection() {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="flex flex-wrap gap-4 mb-10"
           >
-            {['HMO & Single Let', 'Full Compliance', 'Maximum Occupancy', 'Guaranteed Rent'].map((benefit) => (
+            {['HMO & Single Let', 'Full Compliance', 'Local Service'].map((benefit) => (
               <div key={benefit} className="flex items-center space-x-2 text-gray-300">
                 <CheckCircle className="w-5 h-5 text-gold-500" />
                 <span>{benefit}</span>
@@ -118,34 +118,8 @@ export function HeroSection() {
               icon={<Phone className="w-5 h-5" />}
               className="border-white text-white hover:bg-white hover:text-navy-900"
             >
-              Speak To A Specialist
+              Get In Touch
             </Button>
-          </motion.div>
-
-          {/* Trust Indicators */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.6 }}
-            className="mt-12 pt-8 border-t border-white/20"
-          >
-            <p className="text-sm text-gray-400 mb-4">Trusted by landlords across Gloucestershire</p>
-            <div className="flex items-center space-x-8">
-              <div>
-                <p className="text-3xl font-bold text-white">320+</p>
-                <p className="text-sm text-gray-400">Rooms Managed</p>
-              </div>
-              <div className="h-10 w-px bg-white/20" />
-              <div>
-                <p className="text-3xl font-bold text-white">97%</p>
-                <p className="text-sm text-gray-400">Occupancy Rate</p>
-              </div>
-              <div className="h-10 w-px bg-white/20" />
-              <div>
-                <p className="text-3xl font-bold text-white">99.2%</p>
-                <p className="text-sm text-gray-400">Rent Collected</p>
-              </div>
-            </div>
           </motion.div>
         </div>
       </div>

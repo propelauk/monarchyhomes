@@ -14,7 +14,6 @@ const footerLinks = {
   resources: [
     { name: 'Compliance Checklist', href: '#resources' },
     { name: 'Landlord Guide', href: '/resources/landlord-guide' },
-    { name: 'Case Studies', href: '#case-studies' },
     { name: 'FAQs', href: '/faqs' },
     { name: 'Blog', href: '/blog' },
   ],
@@ -50,11 +49,11 @@ export function Footer() {
               />
               <div>
                 <span className="text-2xl font-serif font-bold text-white">Monarchy Homes</span>
-                <p className="text-sm text-gray-400">HMO Income & Compliance Specialists</p>
+                <p className="text-sm text-gray-400">Reliability & Trust</p>
               </div>
             </Link>
             <p className="text-gray-400 mb-6 max-w-sm">
-              Expert HMO property management across Gloucestershire. We maximise your rental income while ensuring full compliance.
+              HMO and single let property management across Gloucestershire. We help keep your property compliant and fully let.
             </p>
             <div className="space-y-3">
               <a

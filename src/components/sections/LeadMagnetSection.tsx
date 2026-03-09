@@ -96,7 +96,7 @@ export function LeadMagnetSection() {
 
               {/* Trust Text */}
               <p className="text-sm text-gray-500">
-                Used by 500+ Gloucestershire landlords • Updated for 2026 regulations
+                Updated for 2026 regulations
               </p>
             </motion.div>
 

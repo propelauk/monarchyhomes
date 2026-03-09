@@ -9,7 +9,7 @@ const steps = [
     number: '01',
     icon: ClipboardCheck,
     title: 'HMO Compliance Review',
-    description: 'We conduct a thorough assessment of your property, identifying any compliance gaps and licensing requirements. Our experts ensure your HMO meets all local council standards.',
+    description: 'We conduct a thorough assessment of your property, identifying any compliance gaps and licensing requirements to help ensure your HMO meets all local council standards.',
     features: ['Full property inspection', 'Licensing assessment', 'Fire safety audit', 'Council standards check'],
     color: 'bg-blue-500',
   },
@@ -52,10 +52,10 @@ export function ProcessSection() {
           className="text-center mb-16"
         >
           <h2 className="section-heading">
-            How We Put <span className="text-gold-600">More Money</span> in Your Pocket
+            How We <span className="text-gold-600">Help You</span> Manage Your HMO
           </h2>
           <p className="section-subheading mx-auto">
-            Our proven 4-step process transforms your HMO from a headache into a hands-off investment.
+            Our 4-step process takes the stress out of HMO management.
           </p>
         </motion.div>
 
