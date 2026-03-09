@@ -149,12 +149,13 @@ export async function GET(request: NextRequest) {
     const totalPageViews = events?.filter(e => e.event_type === 'page_view').length || 0
     const totalCtaClicks = events?.filter(e => e.event_type === 'cta_click').length || 0
     const totalFormStarts = events?.filter(e => e.event_type === 'form_start').length || 0
-    const totalFormSubmits = events?.filter(e => e.event_type === 'form_submit').length || 0
+    // Count both form_submit AND resource_download as form submissions (both involve filling a form)
+    const totalFormSubmits = events?.filter(e => e.event_type === 'form_submit' || e.event_type === 'resource_download').length || 0
 
     // Aggregate previous period data for trends
     const prevPageViews = prevEvents?.filter(e => e.event_type === 'page_view').length || 0
     const prevCtaClicks = prevEvents?.filter(e => e.event_type === 'cta_click').length || 0
-    const prevFormSubmits = prevEvents?.filter(e => e.event_type === 'form_submit').length || 0
+    const prevFormSubmits = prevEvents?.filter(e => e.event_type === 'form_submit' || e.event_type === 'resource_download').length || 0
     const prevFormStarts = prevEvents?.filter(e => e.event_type === 'form_start').length || 0
 
     // Calculate trend percentages (compare to previous period)
@@ -165,8 +166,8 @@ export async function GET(request: NextRequest) {
       return Math.round(((current - previous) / previous) * 100 * 10) / 10 // One decimal place
     }
 
-    const prevConversionRate = prevFormStarts > 0 ? (prevFormSubmits / prevFormStarts) * 100 : 0
-    const currentConversionRate = totalFormStarts > 0 ? (totalFormSubmits / totalFormStarts) * 100 : 0
+    const prevConversionRate = prevCtaClicks > 0 ? (prevFormSubmits / prevCtaClicks) * 100 : 0
+    const currentConversionRate = totalCtaClicks > 0 ? (totalFormSubmits / totalCtaClicks) * 100 : 0
 
     const trends = {
       pageViews: calculateTrend(totalPageViews, prevPageViews),
@@ -196,6 +197,11 @@ export async function GET(request: NextRequest) {
     })
 
     // Funnel data
+    // Conversion rate: form submissions / CTA clicks (or page views if no CTA clicks)
+    // This is more meaningful than formSubmits/formStarts since formStarts may not be tracked
+    const ctaToFormRate = totalCtaClicks > 0 ? Math.round((totalFormSubmits / totalCtaClicks) * 100) : 0
+    const pageToFormRate = totalPageViews > 0 ? Math.round((totalFormSubmits / totalPageViews) * 100) : 0
+    
     const funnelData = {
       pageViews: totalPageViews,
       ctaClicks: totalCtaClicks,
@@ -203,7 +209,8 @@ export async function GET(request: NextRequest) {
       formSubmits: totalFormSubmits,
       ctaRate: totalPageViews > 0 ? Math.round((totalCtaClicks / totalPageViews) * 100) : 0,
       formStartRate: totalCtaClicks > 0 ? Math.round((totalFormStarts / totalCtaClicks) * 100) : 0,
-      conversionRate: totalFormStarts > 0 ? Math.round((totalFormSubmits / totalFormStarts) * 100) : 0,
+      // Use CTA-to-form conversion if we have CTA clicks, otherwise page-to-form
+      conversionRate: totalCtaClicks > 0 ? ctaToFormRate : pageToFormRate,
     }
 
     return NextResponse.json({

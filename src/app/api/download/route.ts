@@ -76,12 +76,12 @@ export async function POST(request: Request) {
         updated_at: new Date().toISOString(),
       })
 
-      // Track download event in analytics
+      // Track download event in analytics (counts as form_submit since user filled a form)
       await supabase.from('analytics_events').insert({
-        event_type: 'resource_download',
+        event_type: 'form_submit',
         page_url: `${SITE_URL}/resources/landlord-guide`,
         page_title: `Download: ${resource.title}`,
-        metadata: { resource: resourceKey, name: body.name },
+        metadata: { form_type: 'download', resource: resourceKey, name: body.name },
         created_at: new Date().toISOString(),
       })
     }

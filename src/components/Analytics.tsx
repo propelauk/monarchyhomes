@@ -72,17 +72,21 @@ export function trackEvent(eventName: string, properties?: Record<string, unknow
   if (typeof window !== 'undefined') {
     // Map event names to valid event types
     let eventType = 'page_view'
-    if (eventName.includes('click') || eventName.includes('cta')) {
+    const lowerEvent = eventName.toLowerCase()
+    
+    // CTA clicks - includes button clicks, opening modals, etc.
+    if (lowerEvent.includes('click') || lowerEvent.includes('cta') || 
+        lowerEvent.includes('_opened') || lowerEvent.includes('_open') ||
+        lowerEvent.includes('callback_opened') || lowerEvent.includes('modal')) {
       eventType = 'cta_click'
-    } else if (eventName.includes('form_start') || eventName.includes('started')) {
+    } else if (lowerEvent.includes('form_start') || lowerEvent.includes('started') || lowerEvent.includes('_step')) {
       eventType = 'form_start'
-    } else if (eventName.includes('submit') || eventName.includes('submitted')) {
+    } else if (lowerEvent.includes('submit') || lowerEvent.includes('submitted') || lowerEvent.includes('download')) {
+      // Both form submissions AND downloads count as form_submit (user filled a form)
       eventType = 'form_submit'
-    } else if (eventName.includes('calculator')) {
+    } else if (lowerEvent.includes('calculator')) {
       eventType = 'calculator_used'
-    } else if (eventName.includes('download')) {
-      eventType = 'resource_download'
-    } else if (eventName.includes('page_view') || eventName.includes('view')) {
+    } else if (lowerEvent.includes('page_view')) {
       eventType = 'page_view'
     }
 
