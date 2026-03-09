@@ -18,11 +18,27 @@ import {
 interface DashboardStats {
   totalLeads: number
   newLeads: number
+  leadsThisWeek: number
   contacted: number
   qualified: number
   converted: number
   conversionRate: number
   weeklyData: Array<{ date: string; count: number }>
+  leadsByStatus: {
+    new: number
+    contacted: number
+    qualified: number
+    proposal_sent: number
+    negotiating: number
+    converted: number
+    lost: number
+  }
+  trends: {
+    totalLeads: number
+    newLeads: number
+    qualified: number
+    conversionRate: number
+  }
 }
 
 interface RecentLead {
@@ -65,11 +81,27 @@ export default function AdminDashboardPage() {
       setStats({
         totalLeads: 0,
         newLeads: 0,
+        leadsThisWeek: 0,
         contacted: 0,
         qualified: 0,
         converted: 0,
         conversionRate: 0,
-        weeklyData: []
+        weeklyData: [],
+        leadsByStatus: {
+          new: 0,
+          contacted: 0,
+          qualified: 0,
+          proposal_sent: 0,
+          negotiating: 0,
+          converted: 0,
+          lost: 0,
+        },
+        trends: {
+          totalLeads: 0,
+          newLeads: 0,
+          qualified: 0,
+          conversionRate: 0,
+        }
       })
       setRecentLeads([])
     } finally {
@@ -119,28 +151,28 @@ export default function AdminDashboardPage() {
           title="Total Leads"
           value={stats?.totalLeads || 0}
           icon={Users}
-          trend={+12}
+          trend={stats?.trends?.totalLeads ?? 0}
           color="blue"
         />
         <StatCard
           title="New This Week"
-          value={stats?.newLeads || 0}
+          value={stats?.leadsThisWeek || 0}
           icon={Clock}
-          trend={+5}
+          trend={stats?.trends?.newLeads ?? 0}
           color="yellow"
         />
         <StatCard
           title="Qualified"
-          value={stats?.qualified || 0}
+          value={stats?.leadsByStatus?.qualified || 0}
           icon={CheckCircle}
-          trend={+8}
+          trend={stats?.trends?.qualified ?? 0}
           color="green"
         />
         <StatCard
           title="Conversion Rate"
           value={`${stats?.conversionRate || 0}%`}
           icon={TrendingUp}
-          trend={+2.1}
+          trend={stats?.trends?.conversionRate ?? 0}
           color="purple"
         />
       </div>
