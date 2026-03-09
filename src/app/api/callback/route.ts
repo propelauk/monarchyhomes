@@ -37,6 +37,15 @@ export async function POST(request: Request) {
         throw new Error(error.message)
       }
 
+      // Track form submission in analytics
+      await supabase.from('analytics_events').insert({
+        event_type: 'form_submit',
+        page_url: request.headers.get('referer') || null,
+        page_title: 'Callback Request',
+        metadata: { form_type: 'callback', preferred_time: callbackData.preferred_time },
+        created_at: new Date().toISOString(),
+      })
+
       console.log('Callback saved to Supabase:', data.id)
       
       return NextResponse.json({

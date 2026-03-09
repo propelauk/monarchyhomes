@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { Analytics } from '@/components/Analytics'
+import { PageViewTracker } from '@/components/PageViewTracker'
 import { Providers } from '@/components/Providers'
 
 export const metadata: Metadata = {
@@ -58,6 +59,7 @@ export default function RootLayout({
       <body className="min-h-screen">
         <Analytics />
         <Providers>
+          <PageViewTracker />
           {children}
         </Providers>
       </body>

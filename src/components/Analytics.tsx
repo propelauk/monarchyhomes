@@ -67,6 +67,64 @@ export function trackEvent(eventName: string, properties?: Record<string, unknow
   if (typeof window !== 'undefined' && window.posthog) {
     window.posthog.capture(eventName, properties)
   }
+
+  // Send to Supabase analytics API (our own analytics)
+  if (typeof window !== 'undefined') {
+    // Map event names to valid event types
+    let eventType = 'page_view'
+    if (eventName.includes('click') || eventName.includes('cta')) {
+      eventType = 'cta_click'
+    } else if (eventName.includes('form_start') || eventName.includes('started')) {
+      eventType = 'form_start'
+    } else if (eventName.includes('submit') || eventName.includes('submitted')) {
+      eventType = 'form_submit'
+    } else if (eventName.includes('calculator')) {
+      eventType = 'calculator_used'
+    } else if (eventName.includes('download')) {
+      eventType = 'resource_download'
+    } else if (eventName.includes('page_view') || eventName.includes('view')) {
+      eventType = 'page_view'
+    }
+
+    // Get or create visitor/session IDs
+    const visitorId = getOrCreateVisitorId()
+    const sessionId = getOrCreateSessionId()
+
+    fetch('/api/analytics', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        event_type: eventType,
+        page_url: window.location.href,
+        page_title: document.title,
+        visitor_id: visitorId,
+        session_id: sessionId,
+        referrer: document.referrer || null,
+        metadata: { original_event: eventName, ...properties },
+      }),
+    }).catch(err => console.error('Analytics send error:', err))
+  }
+}
+
+// Generate unique IDs for tracking
+function getOrCreateVisitorId(): string {
+  if (typeof window === 'undefined') return ''
+  let visitorId = localStorage.getItem('mh_visitor_id')
+  if (!visitorId) {
+    visitorId = 'v_' + Math.random().toString(36).substring(2) + Date.now().toString(36)
+    localStorage.setItem('mh_visitor_id', visitorId)
+  }
+  return visitorId
+}
+
+function getOrCreateSessionId(): string {
+  if (typeof window === 'undefined') return ''
+  let sessionId = sessionStorage.getItem('mh_session_id')
+  if (!sessionId) {
+    sessionId = 's_' + Math.random().toString(36).substring(2) + Date.now().toString(36)
+    sessionStorage.setItem('mh_session_id', sessionId)
+  }
+  return sessionId
 }
 
 // Declare global types for analytics

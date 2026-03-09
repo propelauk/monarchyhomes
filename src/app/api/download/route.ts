@@ -61,6 +61,29 @@ export async function POST(request: Request) {
         downloaded: false,
         created_at: new Date().toISOString(),
       })
+
+      // Also create a lead entry so it shows in admin dashboard
+      await supabase.from('leads').insert({
+        full_name: body.name,
+        phone: body.phone,
+        email: body.email,
+        lead_source: 'website',
+        lead_type: 'download',
+        status: 'new',
+        tags: [resource.title],
+        notes: `Downloaded: ${resource.title}`,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+
+      // Track download event in analytics
+      await supabase.from('analytics_events').insert({
+        event_type: 'resource_download',
+        page_url: `${SITE_URL}/resources/landlord-guide`,
+        page_title: `Download: ${resource.title}`,
+        metadata: { resource: resourceKey, name: body.name },
+        created_at: new Date().toISOString(),
+      })
     }
 
     // Generate download URL

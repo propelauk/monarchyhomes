@@ -61,6 +61,20 @@ export async function createLead(data: CreateLeadRequest): Promise<Lead> {
     throw new Error(`Failed to create lead: ${error.message}`)
   }
 
+  // Track form submission in analytics
+  supabase.from('analytics_events').insert({
+    event_type: 'form_submit',
+    page_title: `Lead Form: ${data.lead_type || 'assessment'}`,
+    metadata: { 
+      lead_type: data.lead_type || 'assessment', 
+      lead_source: data.lead_source || 'website',
+      has_property_postcode: !!data.property_postcode,
+    },
+    created_at: new Date().toISOString(),
+  }).then(({ error }) => {
+    if (error) console.error('Analytics tracking error:', error)
+  })
+
   return lead
 }
 
