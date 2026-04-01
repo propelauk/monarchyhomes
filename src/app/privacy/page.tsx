@@ -1,6 +1,94 @@
 import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
 import { SITE_CONFIG } from '@/lib/constants'
+import { Shield, User, Database, Share2, Lock, FileCheck, Clock, AlertCircle, Mail } from 'lucide-react'
+
+const sections = [
+  {
+    icon: Shield,
+    title: 'Our Commitment',
+    content: 'Monarchy Homes is committed to protecting your personal data and respecting your privacy. This Privacy Policy explains how we collect, use, and protect your personal information when you visit our website, contact us about our services, or enquire about renting or managing a property.',
+    highlight: true,
+  },
+  {
+    icon: FileCheck,
+    title: 'Legal Compliance',
+    content: 'This policy complies with the requirements of the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018.',
+  },
+  {
+    icon: User,
+    title: 'Information We Collect',
+    subsections: [
+      {
+        subtitle: 'Personal Identification',
+        items: ['Name', 'Email address', 'Phone number', 'Address'],
+      },
+      {
+        subtitle: 'Property Enquiry Information',
+        items: ['Details of rental enquiries', 'Property preferences', 'Landlord enquiries'],
+      },
+      {
+        subtitle: 'Technical Information',
+        items: ['IP address', 'Browser type', 'Device information', 'Website usage data'],
+      },
+    ],
+  },
+  {
+    icon: Database,
+    title: 'How We Use Your Information',
+    items: [
+      'To respond to enquiries',
+      'To provide property management services',
+      'To arrange property viewings',
+      'To communicate with landlords or tenants',
+      'To improve our website and services',
+      'To comply with legal obligations',
+    ],
+    note: 'We will only process your personal data where we have a lawful basis to do so.',
+  },
+  {
+    icon: Share2,
+    title: 'Sharing Your Information',
+    content: 'We may share your personal information with:',
+    items: [
+      'Landlords or property owners',
+      'Contractors or maintenance providers',
+      'Professional advisers',
+      'IT and website service providers',
+      'Government authorities where required by law',
+    ],
+    note: 'We will only share information where necessary and appropriate safeguards are in place.',
+  },
+  {
+    icon: Clock,
+    title: 'Data Retention',
+    content: 'We will retain your personal data only for as long as necessary for the purposes it was collected. Where information is no longer required, it will be securely deleted.',
+  },
+  {
+    icon: FileCheck,
+    title: 'Your Data Protection Rights',
+    content: 'Under the UK General Data Protection Regulation, you have the right to:',
+    items: [
+      'Request access to your personal data',
+      'Request correction of inaccurate data',
+      'Request erasure of your personal data',
+      'Object to certain types of processing',
+      'Request restriction of processing',
+      'Request data portability',
+    ],
+  },
+  {
+    icon: Lock,
+    title: 'Data Security',
+    content: 'We implement appropriate technical and organisational measures to protect your personal data from loss, misuse, unauthorised access, and disclosure.',
+    note: 'However, no internet transmission is completely secure.',
+  },
+  {
+    icon: AlertCircle,
+    title: 'Complaints',
+    content: 'If you are unhappy with how we handle your personal data, you have the right to lodge a complaint with the Information Commissioner\'s Office (ICO).',
+  },
+]
 
 export default function PrivacyPage() {
   return (
@@ -8,105 +96,105 @@ export default function PrivacyPage() {
       <Header />
       <main className="pt-20">
         {/* Hero */}
-        <section className="bg-navy-900 py-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h1 className="text-4xl font-serif font-bold text-white">Privacy Policy</h1>
-            <p className="text-gray-400 mt-2">Last updated: February 2026</p>
+        <section className="bg-gradient-to-br from-navy-900 via-navy-800 to-navy-900 py-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gold-500/20 mb-6">
+              <Shield className="w-8 h-8 text-gold-500" />
+            </div>
+            <h1 className="text-4xl md:text-5xl font-serif font-bold text-white mb-4">Privacy Policy</h1>
+            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+              Your privacy matters to us. Here&apos;s how we protect and handle your personal information.
+            </p>
           </div>
         </section>
 
         {/* Content */}
-        <section className="py-16 bg-white">
+        <section className="py-16 bg-gray-50">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="prose prose-lg max-w-none">
-              <h2>1. Introduction</h2>
-              <p>
-                Monarchy Homes (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;) is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website or use our services.
+            <div className="space-y-6">
+              {sections.map((section, index) => (
+                <div
+                  key={index}
+                  className={`bg-white rounded-2xl shadow-sm border ${
+                    section.highlight ? 'border-gold-500/30 bg-gradient-to-r from-gold-50 to-white' : 'border-gray-100'
+                  } overflow-hidden`}
+                >
+                  <div className="p-6 md:p-8">
+                    <div className="flex items-start gap-4">
+                      <div className={`flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center ${
+                        section.highlight ? 'bg-gold-500 text-white' : 'bg-navy-100 text-navy-700'
+                      }`}>
+                        <section.icon className="w-6 h-6" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h2 className="text-xl font-semibold text-navy-900 mb-3">{section.title}</h2>
+                        
+                        {section.content && (
+                          <p className="text-gray-600 leading-relaxed">{section.content}</p>
+                        )}
+
+                        {section.subsections && (
+                          <div className="mt-4 grid gap-4 md:grid-cols-3">
+                            {section.subsections.map((sub, subIndex) => (
+                              <div key={subIndex} className="bg-gray-50 rounded-xl p-4">
+                                <h3 className="font-medium text-navy-800 text-sm mb-2">{sub.subtitle}</h3>
+                                <ul className="space-y-1">
+                                  {sub.items.map((item, itemIndex) => (
+                                    <li key={itemIndex} className="text-gray-600 text-sm flex items-center gap-2">
+                                      <span className="w-1.5 h-1.5 rounded-full bg-gold-500" />
+                                      {item}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {section.items && !section.subsections && (
+                          <ul className="mt-4 grid gap-2 md:grid-cols-2">
+                            {section.items.map((item, itemIndex) => (
+                              <li key={itemIndex} className="text-gray-600 flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full bg-gold-500 flex-shrink-0" />
+                                {item}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+
+                        {section.note && (
+                          <p className="mt-4 text-sm text-gold-700 bg-gold-50 rounded-lg px-4 py-2 border border-gold-200">
+                            {section.note}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {/* Contact Card */}
+              <div className="bg-navy-900 rounded-2xl p-8 text-center">
+                <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-gold-500/20 mb-4">
+                  <Mail className="w-7 h-7 text-gold-500" />
+                </div>
+                <h2 className="text-2xl font-semibold text-white mb-2">Questions?</h2>
+                <p className="text-gray-400 mb-4">
+                  If you have any questions about this Privacy Policy, please contact us:
+                </p>
+                <a
+                  href={`mailto:${SITE_CONFIG.email}`}
+                  className="inline-flex items-center gap-2 text-gold-500 hover:text-gold-400 font-medium text-lg transition-colors"
+                >
+                  <Mail className="w-5 h-5" />
+                  {SITE_CONFIG.email}
+                </a>
+              </div>
+
+              {/* Last Updated */}
+              <p className="text-center text-gray-500 text-sm">
+                This Privacy Policy may be updated periodically. Any changes will be posted on this page.
               </p>
-
-              <h2>2. Information We Collect</h2>
-              <h3>Personal Information</h3>
-              <p>We may collect personal information that you voluntarily provide to us when you:</p>
-              <ul>
-                <li>Fill out a contact form or assessment request</li>
-                <li>Subscribe to our newsletter</li>
-                <li>Request a callback</li>
-                <li>Download resources from our website</li>
-              </ul>
-              <p>This information may include:</p>
-              <ul>
-                <li>Name</li>
-                <li>Email address</li>
-                <li>Phone number</li>
-                <li>Property address or postcode</li>
-                <li>Property details (type, rooms, current setup)</li>
-              </ul>
-
-              <h3>Automatically Collected Information</h3>
-              <p>
-                When you visit our website, we may automatically collect certain information about your device, including your IP address, browser type, operating system, and browsing behaviour. This is collected through cookies and similar technologies.
-              </p>
-
-              <h2>3. How We Use Your Information</h2>
-              <p>We use the information we collect to:</p>
-              <ul>
-                <li>Respond to your enquiries and provide property management services</li>
-                <li>Send you marketing communications (with your consent)</li>
-                <li>Improve our website and services</li>
-                <li>Comply with legal obligations</li>
-                <li>Protect against fraud and misuse</li>
-              </ul>
-
-              <h2>4. Information Sharing</h2>
-              <p>
-                We do not sell your personal information. We may share your information with:
-              </p>
-              <ul>
-                <li>Service providers who assist our operations (e.g., email services, analytics)</li>
-                <li>Professional advisers (accountants, lawyers)</li>
-                <li>Regulatory authorities when required by law</li>
-                <li>Prospective tenants (limited property information only)</li>
-              </ul>
-
-              <h2>5. Data Security</h2>
-              <p>
-                We implement appropriate technical and organisational measures to protect your personal information against unauthorised access, alteration, disclosure, or destruction.
-              </p>
-
-              <h2>6. Your Rights</h2>
-              <p>Under UK GDPR, you have the right to:</p>
-              <ul>
-                <li>Access your personal data</li>
-                <li>Correct inaccurate data</li>
-                <li>Request deletion of your data</li>
-                <li>Object to processing</li>
-                <li>Request data portability</li>
-                <li>Withdraw consent at any time</li>
-              </ul>
-
-              <h2>7. Cookies</h2>
-              <p>
-                Our website uses cookies to enhance your experience. See our <a href="/cookies" className="text-gold-600 hover:underline">Cookie Policy</a> for more information.
-              </p>
-
-              <h2>8. Data Retention</h2>
-              <p>
-                We retain your personal information for as long as necessary to fulfil the purposes for which it was collected, or as required by law. Typically, we retain client data for 7 years after our business relationship ends.
-              </p>
-
-              <h2>9. Changes to This Policy</h2>
-              <p>
-                We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new policy on this page with an updated date.
-              </p>
-
-              <h2>10. Contact Us</h2>
-              <p>
-                If you have questions about this Privacy Policy or wish to exercise your rights, please contact us:
-              </p>
-              <ul>
-                <li>Email: {SITE_CONFIG.email}</li>
-                <li>Phone: {SITE_CONFIG.phone}</li>
-              </ul>
             </div>
           </div>
         </section>
