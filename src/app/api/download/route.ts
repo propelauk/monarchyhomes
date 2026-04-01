@@ -8,9 +8,9 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://monarchyhomes.com'
 // Resource configuration
 const RESOURCES: Record<string, { title: string; filename: string; description: string }> = {
   'renters-rights-act': {
-    title: 'The Renters Rights Act Explained',
+    title: 'The Renters\' Rights Act Explained',
     filename: 'The Renters Rights Act explained.pdf',
-    description: 'Your comprehensive guide to understanding the new Renters Rights Act',
+    description: 'Your comprehensive guide to understanding the new Renters\' Rights Act',
   },
 }
 

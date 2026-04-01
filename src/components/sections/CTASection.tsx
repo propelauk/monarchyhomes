@@ -1,17 +1,14 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Phone, Calendar, ArrowRight } from 'lucide-react'
+import { Phone, Mail, MessageCircle } from 'lucide-react'
 import { Button } from '@/components/Button'
 import { trackEvent } from '@/components/Analytics'
+import { SITE_CONFIG } from '@/lib/constants'
 
 export function CTASection() {
-  const handleBookReview = () => {
-    trackEvent('cta_click', { location: 'cta_section', cta: 'book_review' })
-  }
-
-  const handleCallback = () => {
-    trackEvent('cta_click', { location: 'cta_section', cta: 'request_callback' })
+  const handleContact = () => {
+    trackEvent('cta_click', { location: 'cta_section', cta: 'contact' })
   }
 
   return (
@@ -32,45 +29,56 @@ export function CTASection() {
         >
           {/* Icon */}
           <div className="w-16 h-16 bg-gold-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
-            <Calendar className="w-8 h-8 text-navy-900" />
+            <MessageCircle className="w-8 h-8 text-navy-900" />
           </div>
 
           {/* Headline */}
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-white mb-6">
-            Let&apos;s Review Your Property.
+            Get In Touch With Us
           </h2>
 
           {/* Description */}
           <p className="text-lg text-gray-400 mb-10 max-w-2xl mx-auto">
-            Book a free, no-obligation chat. We&apos;ll discuss your property and how we might be able to help.
+            Have questions about property management? We&apos;re here to help. Reach out by phone or email and we&apos;ll get back to you promptly.
           </p>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              href="#assessment"
-              variant="primary"
-              size="lg"
-              onClick={handleBookReview}
-              icon={<ArrowRight className="w-5 h-5" />}
+          {/* Contact Info */}
+          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-10">
+            <a 
+              href={`tel:${SITE_CONFIG.phone.replace(/\s/g, '')}`}
+              onClick={handleContact}
+              className="flex items-center space-x-3 text-white hover:text-gold-500 transition-colors"
             >
-              Get Your Free Assessment
-            </Button>
-            <Button
-              href="tel:01452452308"
-              variant="outline"
-              size="lg"
-              onClick={handleCallback}
-              icon={<Phone className="w-5 h-5" />}
-              className="border-white text-white hover:bg-white hover:text-navy-900"
+              <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center">
+                <Phone className="w-5 h-5" />
+              </div>
+              <span className="text-lg font-medium">{SITE_CONFIG.phone}</span>
+            </a>
+            <a 
+              href={`mailto:${SITE_CONFIG.email}`}
+              onClick={handleContact}
+              className="flex items-center space-x-3 text-white hover:text-gold-500 transition-colors"
             >
-              Call Me Back
-            </Button>
+              <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center">
+                <Mail className="w-5 h-5" />
+              </div>
+              <span className="text-lg font-medium">{SITE_CONFIG.email}</span>
+            </a>
           </div>
+
+          {/* CTA Button */}
+          <Button
+            href="/contact"
+            variant="primary"
+            size="lg"
+            onClick={handleContact}
+          >
+            Send Us a Message
+          </Button>
 
           {/* Trust Text */}
           <p className="mt-8 text-sm text-gray-500">
-            No commitment required • Response within 24 hours
+            Response within 24 hours • No obligation
           </p>
         </motion.div>
       </div>

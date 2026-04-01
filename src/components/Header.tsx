@@ -4,21 +4,19 @@ import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, Phone, PhoneCall, ClipboardCheck } from 'lucide-react'
+import { Menu, X, PhoneCall, ClipboardCheck } from 'lucide-react'
 import { SITE_CONFIG } from '@/lib/constants'
-import { useCallback } from '@/context/CallbackContext'
 
 const navigation = [
   { name: 'Home', href: '/' },
-  { name: 'Services', href: '#services' },
-  { name: 'About', href: '#about' },
-  { name: 'Resources', href: '#resources' },
-  { name: 'Contact', href: '#contact' },
+  { name: 'Services', href: '/services' },
+  { name: 'About', href: '/about' },
+  { name: 'Resources', href: '/#resources' },
+  { name: 'Contact', href: '/contact' },
 ]
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const { openCallback } = useCallback()
 
   return (
     <>
@@ -53,17 +51,10 @@ export function Header() {
               ))}
             </div>
 
-            {/* CTA Buttons */}
+            {/* CTA Button */}
             <div className="hidden lg:flex items-center space-x-4">
-              <button
-                onClick={openCallback}
-                className="flex items-center space-x-2 text-charcoal-700 hover:text-navy-900 font-medium transition-colors"
-              >
-                <Phone className="w-4 h-4" />
-                <span>Contact Us</span>
-              </button>
               <Link
-                href="#assessment"
+                href="/#assessment"
                 className="btn-primary text-sm px-5 py-2.5"
               >
                 Free Assessment
@@ -106,18 +97,8 @@ export function Header() {
                   </Link>
                 ))}
               <div className="pt-4 border-t border-gray-100 space-y-3">
-                <button
-                  onClick={() => {
-                    setIsMobileMenuOpen(false)
-                    openCallback()
-                  }}
-                  className="flex items-center justify-center space-x-2 px-4 py-3 text-navy-900 font-semibold w-full"
-                >
-                  <Phone className="w-5 h-5" />
-                  <span>Contact Us</span>
-                </button>
                 <Link
-                  href="#assessment"
+                  href="/#assessment"
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="block btn-primary text-center"
                 >
@@ -134,19 +115,19 @@ export function Header() {
     <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-white border-t border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.1)]">
       <div className="flex">
         <Link
-          href="#assessment"
+          href="/#assessment"
           className="flex-1 flex items-center justify-center gap-2 py-4 bg-gold-500 text-navy-900 font-semibold text-sm"
         >
           <ClipboardCheck className="w-4 h-4" />
           <span>Free Assessment</span>
         </Link>
-        <button
-          onClick={openCallback}
+        <Link
+          href="/contact"
           className="flex-1 flex items-center justify-center gap-2 py-4 bg-navy-900 text-white font-semibold text-sm"
         >
           <PhoneCall className="w-4 h-4" />
-          <span>Call Me Back</span>
-        </button>
+          <span>Get in Touch</span>
+        </Link>
       </div>
     </div>
     </>

@@ -47,7 +47,7 @@ export function LeadMagnetSection() {
   }
 
   const keyTopics = [
-    'What the Renters Rights Act means',
+    'What the Renters\' Rights Act means',
     'Key changes for landlords',
     'New tenant protections',
     'Eviction process changes',
@@ -75,11 +75,11 @@ export function LeadMagnetSection() {
               </div>
 
               <h2 className="text-2xl md:text-3xl lg:text-4xl font-serif font-bold text-white mb-4">
-                The Renters Rights Act Explained
+                The Renters&apos; Rights Act Explained
               </h2>
 
               <p className="text-gray-400 mb-8">
-                Stay ahead of the changes. Download our comprehensive guide to understand how the new Renters Rights Act affects you as a landlord.
+                Stay ahead of the changes. Download our comprehensive guide to understand how the new Renters&apos; Rights Act affects you as a landlord.
               </p>
 
               {/* Key Topics Preview */}
@@ -116,7 +116,7 @@ export function LeadMagnetSection() {
                       Check Your Email!
                     </h3>
                     <p className="text-charcoal-600 mb-6">
-                      We&apos;ve sent your download link to your inbox. Click the link in the email to access your free guide on the Renters Rights Act.
+                      We&apos;ve sent your download link to your inbox. Click the link in the email to access your free guide on the Renters&apos; Rights Act.
                     </p>
                     <Button
                       variant="secondary"
