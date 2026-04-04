@@ -134,14 +134,16 @@ export function Footer() {
       <div className="border-t border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-8">
-            {/* PRS Member */}
+            {/* PRS */}
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gray-700 rounded flex items-center justify-center">
-                <svg className="w-6 h-6 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <span className="text-gray-400 text-sm">Property Redress Scheme Member</span>
+              <Image
+                src="/prs-logo.png"
+                alt="Property Redress Scheme"
+                width={40}
+                height={40}
+                className="w-10 h-10 object-contain"
+              />
+              <span className="text-gray-400 text-sm">Property Redress Scheme</span>
             </div>
             {/* ICO Registration */}
             <div className="flex items-center space-x-3">

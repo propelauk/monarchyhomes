@@ -18,7 +18,7 @@ export default function AboutPage() {
     {
       icon: Building2,
       title: 'Local Expertise',
-      description: 'Deep knowledge of Gloucestershire&apos;s property market and council requirements.',
+      description: 'Deep knowledge of Gloucestershire property market and council requirements.',
     },
   ]
 
@@ -34,7 +34,7 @@ export default function AboutPage() {
                 About Monarchy Homes
               </h1>
               <p className="text-xl text-gray-300">
-                Gloucestershire&apos;s trusted property management specialists. We help landlords maximise returns while eliminating the hassle.
+                Gloucestershire&apos;s trusted property management specialist. We help landlords maximise returns while eliminating the hassle.
               </p>
             </div>
           </div>
@@ -50,10 +50,7 @@ export default function AboutPage() {
                   Monarchy Homes was founded with a simple mission: to provide Gloucestershire landlords with property management they can truly rely on.
                 </p>
                 <p className="mb-4">
-                  We noticed too many landlords struggling with the complexities of HMO compliance, tenant issues, and the ever-changing regulatory landscape. Many were working with agents who treated property management as a sideline, not a specialism.
-                </p>
-                <p className="mb-4">
-                  We built Monarchy Homes to be different. Our focus is entirely on delivering results for landlords – maximum occupancy, full compliance, and hassle-free income. Whether you have a single let or a portfolio of HMOs, we treat your property as if it were our own.
+                  Our focus is on delivering results for landlords – maximum occupancy, full compliance, and hassle-free income. Whether you have a single let or a portfolio of HMOs, we treat your property as if it were our own.
                 </p>
                 <p>
                   Today, we manage properties across Gloucester, Cheltenham, Stroud, Tewkesbury, and the wider county, helping landlords achieve consistent returns while staying fully compliant with all regulations.
@@ -79,30 +76,6 @@ export default function AboutPage() {
                   <p className="text-charcoal-600">{value.description}</p>
                 </div>
               ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Stats */}
-        <section className="py-20 bg-navy-900">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-              <div>
-                <p className="text-4xl font-bold text-gold-500 mb-2">45+</p>
-                <p className="text-gray-400">Properties Managed</p>
-              </div>
-              <div>
-                <p className="text-4xl font-bold text-gold-500 mb-2">320+</p>
-                <p className="text-gray-400">Rooms Under Management</p>
-              </div>
-              <div>
-                <p className="text-4xl font-bold text-gold-500 mb-2">97%</p>
-                <p className="text-gray-400">Occupancy Rate</p>
-              </div>
-              <div>
-                <p className="text-4xl font-bold text-gold-500 mb-2">99%</p>
-                <p className="text-gray-400">Rent Collected</p>
-              </div>
             </div>
           </div>
         </section>
